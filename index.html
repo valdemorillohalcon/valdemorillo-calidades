@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Materiales y Calidades · Calle Alcón 9, Valdemorillo</title>
+  <meta name="description" content="Aplicación de selección de calidades, comparativa de materiales y cierre de presupuesto para Laura y Alejandro en Valdemorillo.">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- =========================================================================
+       CABECERA PRINCIPAL
+       ========================================================================= -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="header-brand">
+        <div class="brand-icon">
+          <i data-lucide="home"></i>
+        </div>
+        <div class="header-titles">
+          <h1>CALLE ALCÓN N.º 9 · VALDEMORILLO</h1>
+          <p>
+            <span>Laura & Alejandro</span>
+            <span>·</span>
+            <span>Control de Materiales & Calidades</span>
+            <span class="header-tag tag-energy-a">Calificación Energética A</span>
+            <span class="header-tag">Memoria 30/7/2026</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-primary" id="btn-add-material">
+          <i data-lucide="plus-circle"></i> Nuevo Material
+        </button>
+        <button class="btn btn-secondary" id="btn-toggle-dossier">
+          <i data-lucide="file-text"></i> Modo Aparejador
+        </button>
+        <button class="btn btn-secondary" id="btn-open-backup">
+          <i data-lucide="save"></i> Respaldar / Cargar
+        </button>
+        <button class="btn btn-secondary" id="btn-open-github">
+          <i data-lucide="github"></i> Publicar en GitHub
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       DASHBOARD DE KPIs Y CONTROL PRESUPUESTARIO
+       ========================================================================= -->
+  <section class="kpi-section" id="kpi-section">
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-total">
+        <div class="kpi-title">
+          <span>Total Presupuesto Materiales</span>
+          <i data-lucide="euro"></i>
+        </div>
+        <div class="kpi-value" id="kpi-total-val">0 €</div>
+        <div class="kpi-subtext" id="kpi-total-sub">Calculado según mediciones y mermas</div>
+      </div>
+
+      <div class="kpi-card kpi-closed">
+        <div class="kpi-title">
+          <span>Materiales Cerrados</span>
+          <i data-lucide="check-circle-2"></i>
+        </div>
+        <div class="kpi-value" id="kpi-closed-val">0 €</div>
+        <div class="kpi-subtext" id="kpi-closed-sub">0 de 0 partidas cerradas</div>
+        <div class="kpi-progress-bar">
+          <div class="kpi-progress-fill" id="kpi-progress-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-criteria">
+        <div class="kpi-title">
+          <span>Criterio Propietarios</span>
+          <i data-lucide="sparkles"></i>
+        </div>
+        <div class="kpi-value" id="kpi-criteria-val">0</div>
+        <div class="kpi-subtext" id="kpi-criteria-sub">Partidas que requieren decisión</div>
+      </div>
+
+      <div class="kpi-card kpi-pending">
+        <div class="kpi-title">
+          <span>Decisiones Pendientes</span>
+          <i data-lucide="clock"></i>
+        </div>
+        <div class="kpi-value" id="kpi-pending-val">0</div>
+        <div class="kpi-subtext" id="kpi-pending-sub">Por elegir o en valoración</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       BARRA DE CONTROLES, FILTROS Y BÚSQUEDA
+       ========================================================================= -->
+  <section class="controls-section" id="controls-section">
+    <div class="controls-card">
+      <div class="filter-tabs">
+        <button class="filter-tab tab-criteria active" data-filter="criteria">
+          <i data-lucide="sparkles"></i> Criterio Laura & Alejandro
+          <span class="badge-count" id="count-criteria">0</span>
+        </button>
+        <button class="filter-tab" data-filter="all">
+          <i data-lucide="layers"></i> Toda la Obra
+          <span class="badge-count" id="count-all">0</span>
+        </button>
+        <button class="filter-tab" data-filter="pending">
+          <i data-lucide="alert-circle"></i> Pendientes
+          <span class="badge-count" id="count-pending">0</span>
+        </button>
+        <button class="filter-tab" data-filter="reviewing">
+          <i data-lucide="search"></i> En Valoración
+          <span class="badge-count" id="count-reviewing">0</span>
+        </button>
+        <button class="filter-tab" data-filter="selected">
+          <i data-lucide="check-check"></i> Cerrados
+          <span class="badge-count" id="count-selected">0</span>
+        </button>
+      </div>
+
+      <div class="filter-inputs-row">
+        <div class="search-box">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" id="search-input" class="search-input" placeholder="Buscar por material, estancia (baño, fachada...), marca (IKEA, Simon, Malpesa)...">
+        </div>
+
+        <select id="select-chapter" class="select-chapter">
+          <option value="todos">Todos los Capítulos</option>
+          <!-- Rellenado dinámicamente -->
+        </select>
+
+        <select id="select-sort" class="select-sort">
+          <option value="default">Orden por Defecto</option>
+          <option value="price-desc">Precio: Mayor a Menor</option>
+          <option value="price-asc">Precio: Menor a Mayor</option>
+          <option value="name">Alfabético</option>
+          <option value="pending-first">Pendientes Primero</option>
+        </select>
+
+        <button class="btn btn-outline" id="btn-export-csv" title="Descargar Excel / CSV">
+          <i data-lucide="table"></i> CSV
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       CONTENIDO PRINCIPAL: CUADRÍCULA DE TARJETAS
+       ========================================================================= -->
+  <main class="content-section" id="content-section">
+    <div class="materials-grid" id="materials-container">
+      <!-- Se generan dinámicamente desde app.js -->
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       MODO DOSSIER TÉCNICO (APAREJADOR Y CONSTRUCTOR)
+       ========================================================================= -->
+  <section class="dossier-view" id="dossier-view">
+    <div class="dossier-card">
+      <div class="dossier-header">
+        <div>
+          <h2>DOSSIER DE SELECCIÓN DE CALIDADES Y MEDICIONES</h2>
+          <p class="dossier-meta">
+            <strong>Obra:</strong> Vivienda Unifamiliar · Calle Alcón Nº 9, Valdemorillo (Madrid)<br>
+            <strong>Promotores:</strong> Laura & Alejandro<br>
+            <strong>Documento de soporte para:</strong> Aparejador / Dirección de Ejecución y Constructor para valoración de mano de obra y montaje de materiales seleccionados.<br>
+            <strong>Fecha de emisión:</strong> <span id="dossier-date"></span>
+          </p>
+        </div>
+        <div class="no-print">
+          <button class="btn btn-primary" onclick="window.print()">
+            <i data-lucide="printer"></i> Imprimir / Guardar en PDF
+          </button>
+          <button class="btn btn-outline" id="btn-close-dossier" style="margin-left: 0.5rem;">
+            Volver a la App
+          </button>
+        </div>
+      </div>
+
+      <table class="dossier-table" id="dossier-table">
+        <thead>
+          <tr>
+            <th style="width: 15%;">Capítulo & Estancia</th>
+            <th style="width: 25%;">Material Seleccionado / Propuesto</th>
+            <th style="width: 12%;">Medición</th>
+            <th style="width: 13%;">P. Material Est.</th>
+            <th style="width: 35%;">Criterios Técnicos y Requisitos de Montaje para el Constructor</th>
+          </tr>
+        </thead>
+        <tbody id="dossier-tbody">
+          <!-- Generado dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       MODAL: AÑADIR / EDITAR MATERIAL
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-material">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modal-material-title">Añadir Nuevo Material</h3>
+        <button class="modal-close" id="btn-close-material-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-mat-id">
+
+        <div class="form-group">
+          <label>Nombre del Elemento / Partida *</label>
+          <input type="text" id="mat-name" class="form-control" placeholder="Ej: Espejo retroiluminado LED baño principal">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Capítulo de Obra</label>
+            <select id="mat-chapter" class="form-control">
+              <!-- Opciones dinámicas -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Ubicación / Estancia</label>
+            <input type="text" id="mat-location" class="form-control" placeholder="Ej: Baño principal, Salón, Jardín...">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Cantidad / Medición</label>
+            <input type="number" id="mat-qty" class="form-control" step="0.1" value="1">
+          </div>
+          <div class="form-group">
+            <label>Unidad de Medida</label>
+            <select id="mat-unit" class="form-control">
+              <option value="m2">m² (Superficie / Metros cuadrados)</option>
+              <option value="ml">ml (Metros lineales)</option>
+              <option value="ud">ud (Unidades)</option>
+              <option value="pa">pa (Partida Alzada)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>% Merma / Desperdicio</label>
+            <input type="number" id="mat-wastage" class="form-control" value="0" placeholder="Ej: 10% para azulejos">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Precio Unitario Estimado (€)</label>
+            <input type="number" id="mat-price" class="form-control" step="0.5" value="0">
+          </div>
+          <div class="form-group">
+            <label>Estado de Selección</label>
+            <select id="mat-status" class="form-control">
+              <option value="pending">Pendiente de elegir</option>
+              <option value="reviewing">En valoración / Comparando</option>
+              <option value="selected">Cerrado / Seleccionado</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" id="mat-needs-criteria" style="width: 18px; height: 18px; accent-color: var(--criteria-badge);">
+            <strong style="color: #6d28d9;">¿Requiere Criterio / Decisión de Laura & Alejandro?</strong>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>Explicación didáctica (¿Para qué sirve y qué se busca?)</label>
+          <textarea id="mat-explanation" class="form-control" rows="2" placeholder="Explica de forma clara y sencilla qué características debe tener este material..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Memoria Técnica original</label>
+          <textarea id="mat-spec" class="form-control" rows="2" placeholder="Texto literal de la memoria o proyecto..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Instrucciones de Montaje para el Constructor / Aparejador</label>
+          <textarea id="mat-builder" class="form-control" rows="2" placeholder="Detalles de instalación que la constructora debe valorar (mortero cola, replanteo, fijaciones)..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btn-cancel-mat">Cancelar</button>
+        <button class="btn btn-primary" id="btn-save-mat">Guardar Material</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: AÑADIR / EDITAR REFERENCIA U OPCIÓN DE COMPRA
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-option">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modal-option-title">Añadir Opción / Referencia de Tienda</h3>
+        <button class="modal-close" id="btn-close-option-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="opt-mat-id">
+        <input type="hidden" id="opt-id">
+
+        <div class="form-group">
+          <label>Nombre del Modelo o Acabado *</label>
+          <input type="text" id="opt-title" class="form-control" placeholder="Ej: Porcelanosa Arce 12.5x120 cm">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tienda / Proveedor / Fabricante</label>
+            <input type="text" id="opt-provider" class="form-control" placeholder="Ej: IKEA, Leroy Merlin, Porcelanosa, Simon...">
+          </div>
+          <div class="form-group">
+            <label>Precio Unitario (€)</label>
+            <input type="number" id="opt-price" class="form-control" step="0.1" placeholder="Ej: 34.50">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Enlace Web a la tienda / Ficha técnica (URL)</label>
+          <input type="url" id="opt-url" class="form-control" placeholder="https://www.ikea.com/... o https://leroymerlin.es/...">
+        </div>
+
+        <div class="form-group">
+          <label>Foto / URL de Imagen</label>
+          <input type="url" id="opt-image" class="form-control" placeholder="https://... (pega el enlace directo a la imagen)">
+        </div>
+
+        <div class="form-group">
+          <label>Notas / Opinión sobre esta opción</label>
+          <textarea id="opt-notes" class="form-control" rows="2" placeholder="Ej: Buen tacto, pedir descuento si compramos más de 100m²..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btn-cancel-opt">Cancelar</button>
+        <button class="btn btn-primary" id="btn-save-opt">Guardar Referencia</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: RESPALDO, EXPORTACIÓN E IMPORTACIÓN
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-backup">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Respaldar y Restaurar Datos</h3>
+        <button class="modal-close" id="btn-close-backup-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.9rem; color: var(--text-muted);">
+          Todos los cambios que hacéis se guardan automáticamente en vuestro navegador. Desde aquí podéis descargar una copia de seguridad en JSON o restaurar una copia anterior.
+        </p>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
+          <button class="btn btn-primary" id="btn-download-json">
+            <i data-lucide="download"></i> Descargar Copia JSON
+          </button>
+          <button class="btn btn-outline" id="btn-reset-data">
+            <i data-lucide="rotate-ccw"></i> Restaurar Memoria Original
+          </button>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 1rem 0;">
+
+        <div class="form-group">
+          <label>Cargar Archivo de Respaldo (.json)</label>
+          <input type="file" id="input-import-file" accept=".json" class="form-control">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btn-close-backup">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: INFORMACIÓN Y SINCRONIZACIÓN DE GITHUB
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-github">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Publicación en GitHub & Acceso Móvil</h3>
+        <button class="modal-close" id="btn-close-github-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="width: 48px; height: 48px; border-radius: 50%; background: #24292f; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+            <i data-lucide="github"></i>
+          </div>
+          <div>
+            <h4 style="font-size: 1.1rem; font-weight: 700;">Repositorio GitHub Conectado</h4>
+            <p style="font-size: 0.825rem; color: var(--text-muted);">Cuenta: <strong>valdemorillohalcon</strong></p>
+          </div>
+        </div>
+
+        <div style="background: var(--bg-card-alt); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-top: 0.5rem;">
+          <label style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">URL Pública de vuestra aplicación:</label>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
+            <input type="text" id="github-public-url" class="form-control" readonly value="https://valdemorillohalcon.github.io/valdemorillo-calidades/" style="font-weight: 600; color: #2563eb;">
+            <button class="btn btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('github-public-url').value); alert('¡URL copiada al portapapeles!');">
+              Copiar
+            </button>
+          </div>
+        </div>
+
+        <p style="font-size: 0.85rem; color: #475569; line-height: 1.5;">
+          Esta URL podéis abrirla en vuestros teléfonos móviles (iPhone o Android) para llevar todas las fotos, calidades y presupuestos cuando visitéis tiendas de cerámica, IKEA o ferreterías, o para pasárselo a vuestro aparejador y constructor.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btn-close-github">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       LIGHTBOX PARA VER FOTOS AMPLIADAS
+       ========================================================================= -->
+  <div class="lightbox-modal" id="lightbox">
+    <img src="" alt="Foto ampliada" class="lightbox-img" id="lightbox-img">
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
