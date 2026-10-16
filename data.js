@@ -2443,8 +2443,122 @@ const CHAPTERS = [
   { id: "sanitarios", name: "Fontanería, Sanitarios y Griferías", icon: "bath" },
   { id: "revestimientos", name: "Revestimientos y Pavimentos", icon: "grid" },
   { id: "carpinteria-interior", name: "Carpintería Interior y Armarios", icon: "door-closed" },
-  { id: "carpinteria-exterior", name: "Carpintería Exterior y Ventanas", icon: "maximize" },
 ];
+
+// =========================================================================
+// CATEGORÍAS ARQUITECTÓNICAS AJUSTADAS A CADA ESTANCIA
+// =========================================================================
+const ROOM_CATEGORIES = {
+  "salon": [
+    "Chimenea & Bancada de Obra",
+    "Foseado, Techos & Iluminación Indirecta",
+    "Ventanales, Cortineros & Carpintería",
+    "Mobiliario, Sofá & Zona Comedor",
+    "Revestimientos, Paredes & Texturas",
+    "Pavimento Porcelánico Radiante"
+  ],
+  "cocina": [
+    "Isla Central & Barra de Desayunos",
+    "Encimera, Frontal & Salpicadero",
+    "Mobiliario de Suelo a Techo & Columnas",
+    "Campana / Extracción & Techo de Clima",
+    "Iluminación LED bajo Muebles & Focos",
+    "Puerta Doble Lacada P4 & Cerramientos"
+  ],
+  "dormitorio-principal": [
+    "Cabecero & Papel Decorativo / Textil",
+    "Iluminación Indirecta & Apliques de Lectura",
+    "Balconera Sur, Cortinas & Persianas Motorizadas",
+    "Falso Techo & Difusión de Clima",
+    "Mobiliario Auxiliar & Mesillas de Noche"
+  ],
+  "vestidor": [
+    "Distribución Módulos Armario PAX (3,50m)",
+    "Zapateros, Pantaloneros & Cajoneras",
+    "Iluminación LED Interior & Clemas en Techo",
+    "Tapajuntas Lacados 7cm & Remates",
+    "Espejo de Cuerpo Entero & Ventana V6"
+  ],
+  "bano-1": [
+    "Mueble Lavabo Doble Suspendido (120-160cm)",
+    "Zona de Ducha de Gran Formato (160-180cm)",
+    "Hornacinas de Obra con Luz LED",
+    "Alicatado Porcelánico Efecto Mármol / Calacatta",
+    "Mampara Corredera Cristal 6mm Antical",
+    "Griferías Monomando & Termostática",
+    "Inodoro Rimless Start/Stop"
+  ],
+  "despacho": [
+    "Mesa de Trabajo / Escritorio Integrado",
+    "Estanterías & Librería a Medida",
+    "Armario Empotrado A2 (1,63m)",
+    "Pasacables Ocultos & Tomas RJ45 Datos",
+    "Balconera Sur & Control Solar"
+  ],
+  "dormitorio-2": [
+    "Cama, Cabecero & Mesillas de Noche",
+    "Armario Empotrado A3 (1,97m)",
+    "Balconera Sur & Persianas Motorizadas",
+    "Pinturas, Colores Neutros & Textiles",
+    "Iluminación Cálida & Puntos de Conmutación"
+  ],
+  "bano-2": [
+    "Mueble de Lavabo & Grifería",
+    "Plato de Ducha de Resina / Bañera",
+    "Suelo Porcelánico Decorativo C2 (Hidráulico)",
+    "Alicatados, Azulejos & Texturas",
+    "Ventana V2 Oscilobatiente Traslúcida",
+    "Inodoro Compacto & Accesorios"
+  ],
+  "aseo-entrada": [
+    "Lavabo de Cortesía & Grifo de Diseño",
+    "Papel Pintado Vinílico Decorativo / Botánico",
+    "Espejo Retroiluminado con Luz Cálida",
+    "Inodoro Compacto Rimless",
+    "Pavimento & Detalles de Cortesía"
+  ],
+  "zona-trabajo": [
+    "Librería Integrada de Pladur & Baldas de Madera",
+    "Mueble Aparador / Almacenaje Auxiliar",
+    "Iluminación Cenital & Puntos de Luz",
+    "Continuidad del Suelo Salón - Cocina"
+  ],
+  "entrada": [
+    "Armario Empotrado Gabanero A5 (0,90m)",
+    "Banco Descalzador & Zona de Zapatos",
+    "Puerta Blindada P1 Bicolor & Manillón",
+    "Monitor de Videoportero & Cuadro de Mando",
+    "Porche Cubierto Exterior & Luz Estanca IP65"
+  ],
+  "pasillo": [
+    "Puertas de Paso Suelo a Techo Lacadas (2,46m)",
+    "Armario Empotrado A4 (1,26m) Ropa Blanca",
+    "Iluminación Lineal / Focos Empotrados",
+    "Manivelas (Negro Mate / Inox / Dorado)"
+  ],
+  "tendedero": [
+    "Lavadora & Secadora en Columna / Bancada",
+    "Pila de Lavar & Grifo con Ducha Extraíble",
+    "Muebles a Medida para Útiles de Limpieza",
+    "Celosía Exterior WPC Composite Listones Ipe",
+    "Previsión de Hueco para Futura Escalera"
+  ],
+  "instalaciones": [
+    "Bomba de Aerotermia & Acumulador ACS 200L",
+    "Depósito de Inercia & Bombas Circuladoras",
+    "Colectores de Suelo Radiante / Refrescante",
+    "Cuadro Eléctrico General & Armario Red Datos",
+    "Bancada Antivibratoria & Sumidero Sifónico"
+  ],
+  "exteriores": [
+    "Terraza Sur (55 m²) & Pavimento C3 Antideslizante",
+    "Barbacoa de Obra & Encimera Exterior",
+    "Aparcamiento en Grava (35 m²) & Geotextil",
+    "Valla a Calle con Chapado de Piedra Rústica",
+    "Puerta de Coches Automática & Peatonal",
+    "Riego Enterrado & Preinstalación Cargador EV"
+  ]
+};
 
 // =========================================================================
 // ESTANCIAS Y ESPACIOS DEL PROYECTO BÁSICO (PLANTA BAJA - PLANO 03)
@@ -2469,7 +2583,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-sal-1",
         title: "Foseado perimetral con cortinero oculto y tira LED continua",
-        categoryTag: "Iluminación & Techos",
+        categoryTag: "Foseado, Techos & Iluminación Indirecta",
         imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=salon%20luz%20foseada%20cortinero",
         description: "Iluminación indirecta cálida perimetral que baña las paredes y esconde los rieles de las cortinas tras el falso techo.",
@@ -2478,7 +2592,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-sal-2",
         title: "Chimenea integrada enrasada con bancada baja de obra",
-        categoryTag: "Albañilería & Revestimientos",
+        categoryTag: "Chimenea & Bancada de Obra",
         imageUrl: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=modern%20fireplace%20living%20room",
         description: "Hogar de leña cerrado con cristal guillotina o lateral, revestido con placas de yeso ignífugas FOC y bancada volada de porcelánico a juego.",
@@ -2505,7 +2619,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-coc-1",
         title: "Isla central con encimera porcelánica y barra volada en madera",
-        categoryTag: "Mobiliario & Encimeras",
+        categoryTag: "Isla Central & Barra de Desayunos",
         imageUrl: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=kitchen%20island%20wood%20ceramic",
         description: "Gran isla con zona de cocción por inducción enrasada, enchufes escamoteables y barra de desayunos para 3-4 personas.",
@@ -2514,7 +2628,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-coc-2",
         title: "Armariada de suelo a techo en blanco mate con gola oculta",
-        categoryTag: "Carpintería",
+        categoryTag: "Mobiliario de Suelo a Techo & Columnas",
         imageUrl: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=white%20minimal%20kitchen",
         description: "Frentes limpios sin tiradores para integrar frigorífico, horno y microondas en columna y columna despensera.",
@@ -2541,7 +2655,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-dp-1",
         title: "Cabecero con papel textil lino y apliques de lectura orientables",
-        categoryTag: "Revestimientos & Iluminación",
+        categoryTag: "Cabecero & Papel Decorativo / Textil",
         imageUrl: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=bedroom%20headboard%20wallpaper%20linen",
         description: "Papel vinílico con textura acogedora que enmarca la cama matrimonial de 180cm, complementado con luces de lectura cálidas.",
@@ -2567,7 +2681,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-vest-1",
         title: "Vestidor modulado con iluminación LED en barras e interiores",
-        categoryTag: "Carpintería & Organización",
+        categoryTag: "Distribución Módulos Armario PAX (3,50m)",
         imageUrl: "https://images.unsplash.com/photo-1558997519-83ea9252def8?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=walk%20in%20closet%20pax%20ikea%20lighting",
         description: "Módulos PAX en acabado roble o blanco con zapateros extraíbles, cajoneras con frente de vidrio y barras con sensor de apertura.",
@@ -2595,7 +2709,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-b1-1",
         title: "Mueble suspendido roble con lavabo sobre encimera y grifería negra",
-        categoryTag: "Sanitarios & Grifería",
+        categoryTag: "Mueble Lavabo Doble Suspendido (120-160cm)",
         imageUrl: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=bathroom%20vanity%20wood%20black%20faucet",
         description: "Mueble volado en madera cálida con 2 lavabos cerámicos blancos y griferías empotradas en negro mate.",
@@ -2604,7 +2718,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-b1-2",
         title: "Ducha de gran formato con hornacina iluminada para botes de gel",
-        categoryTag: "Alicatados & Obra",
+        categoryTag: "Hornacinas de Obra con Luz LED",
         imageUrl: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=shower%20niche%20led",
         description: "Hornacina o nicho de obra integrado en la pared de la ducha con tira LED IP65 estanca y alicatado en inglete continuo.",
@@ -2630,7 +2744,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-desp-1",
         title: "Escritorio integrado con estanterías de madera y luz lineal",
-        categoryTag: "Mobiliario & Electricidad",
+        categoryTag: "Mesa de Trabajo / Escritorio Integrado",
         imageUrl: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=home%20office%20desk%20shelving",
         description: "Espacio de trabajo despejado con tomas ocultas bajo mesa para ordenadores, monitores y cargadores.",
@@ -2656,7 +2770,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-d2-1",
         title: "Dormitorio acogedor con colores neutros y lamas de madera",
-        categoryTag: "Decoración & Pinturas",
+        categoryTag: "Cama, Cabecero & Mesillas de Noche",
         imageUrl: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=guest%20bedroom%20wood%20neutral",
         description: "Ambiente cálido con iluminación indirecta, tonos tierra y textiles naturales de lino y algodón.",
@@ -2683,7 +2797,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-b2-1",
         title: "Suelo cerámico decorativo con azulejo blanco y grifería cromo",
-        categoryTag: "Pavimentos & Alicatados",
+        categoryTag: "Suelo Porcelánico Decorativo C2 (Hidráulico)",
         imageUrl: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=bathroom%20patterned%20tile%20floor",
         description: "Contraste fresco y juvenil combinando baldosas geométricas en el suelo y paredes limpias en blanco mate.",
@@ -2709,7 +2823,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-as-1",
         title: "Aseo de diseño con papel botánico oscuro y espejo retroiluminado",
-        categoryTag: "Decoración & Espejos",
+        categoryTag: "Papel Pintado Vinílico Decorativo / Botánico",
         imageUrl: "https://images.unsplash.com/photo-1620626011761-996317b8d101?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=powder%20room%20dark%20wallpaper",
         description: "Espacio con gran personalidad: papel decorativo de diseño, espejo redondo con luz trasera y lavabo tipo bol sobre encimera.",
@@ -2734,7 +2848,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-zt-1",
         title: "Librería a medida de pladur con estantes de roble y luz",
-        categoryTag: "Carpintería & Pladur",
+        categoryTag: "Librería Integrada de Pladur & Baldas de Madera",
         imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=built%20in%20bookshelf%20drywall",
         description: "Librería integrada en el tabique que viste el paso entre cocina y salón.",
@@ -2760,7 +2874,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-ent-1",
         title: "Recibidor con banco descalzador de madera y armario gabanero",
-        categoryTag: "Carpintería",
+        categoryTag: "Armario Empotrado Gabanero A5 (0,90m)",
         imageUrl: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=entryway%20bench%20closet",
         description: "Zona de recibimiento muy funcional para dejar calzado y chaquetas al llegar a casa.",
@@ -2785,7 +2899,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-pas-1",
         title: "Pasillo con iluminación lineal y puertas suelo-techo",
-        categoryTag: "Carpintería & Puertas",
+        categoryTag: "Puertas de Paso Suelo a Techo Lacadas (2,46m)",
         imageUrl: "https://images.unsplash.com/photo-1534349762230-e0cadf78f5da?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=hallway%20doors%20minimal",
         description: "Ritmo limpio de puertas altas sin tapetas tradicionales con manivelas en negro mate.",
@@ -2812,7 +2926,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-tend-1",
         title: "Lavandería organizada en torre con pila bajo encimera y celosía exterior",
-        categoryTag: "Instalaciones & Mobiliario",
+        categoryTag: "Lavadora & Secadora en Columna / Bancada",
         imageUrl: "https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=laundry%20room%20storage%20modern",
         description: "Espacio de lavado compacto con muebles a medida sobre lavadora y secadora y escobero integrado.",
@@ -2838,7 +2952,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-inst-1",
         title: "Cuarto de aerotermia limpio y ordenado con valvulería etiquetada",
-        categoryTag: "Aerotermia & Fontanería",
+        categoryTag: "Bomba de Aerotermia & Acumulador ACS 200L",
         imageUrl: "https://images.unsplash.com/photo-1581094288338-2314dddb7ece?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=heat%20pump%20technical%20room",
         description: "Instalación profesional con tuberías de cobre/PPR aisladas y colectores accesibles con tapas registrables.",
@@ -2865,7 +2979,7 @@ const INITIAL_SPACES = [
       {
         id: "insp-ext-1",
         title: "Porche con solado porcelánico continuo y barbacoa de obra moderna",
-        categoryTag: "Exteriores & Barbacoa",
+        categoryTag: "Terraza Sur (55 m²) & Pavimento C3 Antideslizante",
         imageUrl: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1000&auto=format&fit=crop&q=80",
         pinterestUrl: "https://www.pinterest.es/search/pins/?q=modern%20porch%20terrace%20barbecue",
         description: "Terraza exterior protegida por el vuelo de cubierta, con zona de comedor de verano y pavimento antideslizante continuo.",
