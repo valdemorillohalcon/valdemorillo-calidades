@@ -24,7 +24,8 @@ Estructurada a partir del **Plano 03 (Distribución y Superficies de Planta Baja
 - **Cuarto de Instalaciones (5,94 m² utiles):** Aerotermia, depósito ACS 200L, inercia, colectores de suelo radiante y telecomunicaciones.
 - **Porches, Terraza Sur y Parcela (55 m² + 35 m²):** Terraza exterior conectada a dormitorios y salón, barbacoa de obra, parking grava, valla rústica y cancelas automáticas.
 
-**Cada ficha de inspiración permite:**
+**Cada ficha y estancia de inspiración incluye:**
+- **Categorías 100% adaptadas a la estancia:** Filtros específicos mediante chips horizontales táctiles (ej: *Chimenea & Bancada* en Salón, *Isla & Encimera* en Cocina, *Lavabo Doble & Hornacinas LED* en Baño Suite, *Armario IKEA PAX* en Vestidor, etc.).
 - Pegar imágenes directas o enlaces de Pinterest con extractor y previsualizador en vivo.
 - Definir **Requisitos constructivos para la obra** (imprescindible para que fontaneros, electricistas, albañiles y pladuristas preparen las instalaciones previas en tabiques y techos).
 - Ver fotografías en alta resolución a pantalla completa con Lightbox.
