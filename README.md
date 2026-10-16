@@ -1,46 +1,69 @@
-# Control de Materiales y Selección de Calidades · Calle Alcón 9, Valdemorillo
+# Control de Materiales, Calidades & Inspiración de Espacios · Calle Alcón 9, Valdemorillo
 
-Aplicación web desarrollada a medida para **Laura y Alejandro** para la gestión integral, comparativa de calidades, selección de acabados y cierre de presupuesto de la vivienda unifamiliar en **Calle Alcón Nº 9, Valdemorillo (Madrid)**.
-
----
-
-## 🌟 Objetivos Principales del Proyecto
-
-1. **Criterio de Propietarios (Laura & Alejandro):**
-   - Filtro directo para visualizar únicamente aquellos elementos que requieren decisión activa por parte de los propietarios (pavimentos porcelánicos, griferías, azulejos, puertas de paso, manivelas, sanitarios, muebles de lavabo, persianas motorizadas, colores de laca y fachada, papeles decorativos, etc.).
-2. **Explicación didáctica y comprensible:**
-   - Cada material incluye una descripción en lenguaje accesible explicando para qué sirve, por qué se propone esa solución técnica y qué aspectos deben valorar (por ejemplo: clase C3 antideslizante para exteriores/duchas, rotura de puente térmico RPT con gas Argón para conseguir Calificación A, etc.).
-3. **Control Presupuestario Ajustado & Multiplicadores:**
-   - Lógica de cálculo en vivo: cálculo automático por superficie ($m^2$), unidades ($ud$), metros lineales ($ml$) o partida alzada ($pa$), incluyendo el porcentaje de merma por cortes habitual en obra (+10% en azulejos/solados, +5% en rodapiés, etc.).
-4. **Comparador de Opciones & Referencias de Compra:**
-   - Permite añadir alternativas por cada material (IKEA, Porcelanosa, Leroy Merlin, Simon, Roca, etc.) con enlace directo a la tienda online, precio unitario y fotografía con previsualización. Al seleccionar una opción con el botón de radio, se actualiza automáticamente el presupuesto.
-5. **Modo Aparejador & Constructor (Dossier Imprimible / Exportable):**
-   - Vista técnica especializada donde se consolidan las elecciones tomadas, mediciones reales y las **instrucciones de montaje específicas** para que el Aparejador y el Constructor valoren la mano de obra exacta y cierren el presupuesto definitivo.
-   - Permite exportar a **Excel / CSV** y generar informe **PDF** para imprimir.
-6. **Notas y Cuaderno Conjunto:**
-   - Sistema de comentarios rápidos donde Laura y Alejandro pueden dejar notas conjuntas (ej. "¿Este tono de roble encaja con las puertas?", "Preguntar al constructor si entra en plazo").
+Aplicación web desarrollada a medida para **Laura y Alejandro** para la gestión integral, comparativa de calidades, selección de acabados, inspiración visual de estancias y cierre de presupuesto de la vivienda unifamiliar en **Calle Alcón Nº 9, Valdemorillo (Madrid)**.
 
 ---
 
-## 🏗️ Capítulos de la Obra Incluidos
+## 🌟 Secciones Principales de la Aplicación
 
-- **Cimentación y Forjados:** Forjado sanitario ventilado, protección Gas Radón (DB-HS6), dado macizo de arranque de escalera.
-- **Estructura Portante:** Pilares de acero doble U, faldones de cubierta en panel sándwich de 50mm + correas, hueco para escalera en tendedero.
-- **Cubiertas y Evacuación:** Tejas de hormigón a dos aguas, bandejas de vuelos revestidas con placas cementicias Knauf Aquapanel.
-- **Fachadas y Envolvente:** Fábrica de 1/2 pie de ladrillo cara vista claro tipo Malpesa con zócalo de gres, chimenea francesa y barbacoa exterior.
-- **Tabiquería y Falsos Techos:** Tabiquería PYL 15mm con perfilería de 70mm, trasdosados EPS 80mm + MW 60mm (Q3), techos suspendidos con descuelgue para clima hasta 60cm en salón/dormitorio principal.
-- **Aislamientos y Calificación A:** Suelo sobre 3 XPS + lámina anti-impacto, coquillas insonorizantes en bajantes y reflectivo multicapa en capialzados y pilares.
-- **Impermeabilización y Ventilación:** Zócalo Kerdi 40cm en duchas, VMC híbrida en baños y cocina.
-- **Climatización y ACS:** Aerotermia con suelo radiante/refrescante, 4 termostatos independientes, preinstalación de clima por conductos, depósito ACS 200L con recirculación.
-- **Electricidad y Telecomunicaciones:** Mecanismos Simon 27 / Niessen, clemas superiores para iluminación en armarios IKEA, tomas RJ45 Cat.6, preinstalación de cargador de coche eléctrico y cámaras de seguridad.
-- **Fontanería, Sanitarios y Griferías:** Mueble doble suspendido 120-160cm, griferías monomando Aruba, inodoros compactos Start/Stop con tapa amortiguada, platos de resina antideslizante C3, mampara corredera 80cm vidrio 6mm antical.
-- **Revestimientos y Pavimentos:** Porcelánico rectificado C3 imitación madera 12.5x120cm, rodapié blanco de 12cm, azulejo 40x120cm hasta techo, solado exterior sur (55m²), solado entrada y tendedero (24m²).
-- **Carpintería Interior:** Puertas suelo a techo hasta 246cm x 82.5cm lacadas con goma hermética y manivelas inox/negro/dorado, armarios modulares IKEA PAX (ref. máx 275€/m²), puerta blindada de 3 puntos.
-- **Carpintería Exterior:** Ventanas y balconeras PVC imitación madera exterior con RPT, vidrio acústico/seguridad 4+4/16/4+4 gas Argón, persianas motorizadas compactas y cierre de tendedero en composite WPC color Ipe.
-- **Urbanización y Pinturas:** Hormigón impreso en aceras, parking en grava 35m², valla de piedra rústica, cancelas automáticas, pintura plástica lisa lavable y papel pintado en cabeceros.
+### 1. 🎨 Inspiración de Espacios (Moodboard Arquitectónico por Estancias)
+Estructurada a partir del **Plano 03 (Distribución y Superficies de Planta Baja)** del Proyecto Básico (Arquitecto: Marta Echave Etchecopar):
+- **Salón - Comedor (33,56 m² utiles):** Cubierta inclinada, chimenea francesa, ventanal singular en esquina V5 (3,08m de ancho con remate inclinado) y ventanales a terraza sur.
+- **Cocina (20,44 m² utiles):** Gran cocina rectangular con isla central, puerta doble lacada P4 (1,10m) y ventanales V4.
+- **Zona de Trabajo (5,85 m² utiles):** Espacio abierto bisagra entre salón y cocina para rincón de estudio o biblioteca.
+- **Entrada / Zaguán & Porche (3,83 m² + 6,06 m²):** Puerta blindada P1 bicolor, armario gabanero A5 (0,90m).
+- **Aseo de Cortesía (2,62 m² utiles):** Aseo de invitados junto a la entrada con inodoro y lavabo.
+- **Habitación Principal / Dormitorio 1 (16,38 m² utiles):** Suite con salida directa a porche/jardín sur por balconera V1.
+- **Vestidor Principal (4,92 m² utiles):** Frente para armario de 3,50m (A1) tipo IKEA PAX con ventana propia V6.
+- **Baño Principal en Suite (6,10 m² utiles):** Mueble suspendido doble seno (1,2-1,6m), plato de ducha gran formato (160-180cm), zócalo Kerdi 40cm.
+- **Despacho / Teletrabajo (9,86 m² utiles):** Con armario empotrado A2 (1,63m) y salida a terraza sur por balconera V1.
+- **Habitación 2 / Dormitorio 2 (11,65 m² utiles):** Dormitorio amplio con armario empotrado A3 (1,97m) y balconera V1.
+- **Baño 2 (5,40 m² utiles):** Baño completo con ducha de resina, lavabo y ventana V2 (1,40m) traslúcida.
+- **Pasillo Distribuidor (9,62 m² utiles):** Armario empotrado A4 (1,26m) para lencería.
+- **Tendedero & Lavandería (3,60 m² utiles):** Lavadero, celosía exterior WPC Ipe y hueco para futura escalera.
+- **Cuarto de Instalaciones (5,94 m² utiles):** Aerotermia, depósito ACS 200L, inercia, colectores de suelo radiante y telecomunicaciones.
+- **Porches, Terraza Sur y Parcela (55 m² + 35 m²):** Terraza exterior conectada a dormitorios y salón, barbacoa de obra, parking grava, valla rústica y cancelas automáticas.
+
+**Cada ficha de inspiración permite:**
+- Pegar imágenes directas o enlaces de Pinterest con extractor y previsualizador en vivo.
+- Definir **Requisitos constructivos para la obra** (imprescindible para que fontaneros, electricistas, albañiles y pladuristas preparen las instalaciones previas en tabiques y techos).
+- Ver fotografías en alta resolución a pantalla completa con Lightbox.
 
 ---
 
-## 🚀 Despliegue en GitHub Pages
+### 2. 🏷️ Control de Materiales, Mediciones y Presupuesto
+- **Criterio Laura & Alejandro:** Filtro dedicado para los elementos que requieren decisión de los propietarios.
+- **Calculadora en vivo:** Multiplicador por $m^2$, $ml$, $ud$ o $pa$ con porcentaje de merma (+10% en cerámicas, +5% en rodapiés).
+- **Comparador de Opciones:** Permite guardar referencias de IKEA, Porcelanosa, Leroy Merlin, Simon, Roca, etc., con fotos, precios y enlaces directos a tiendas.
+- **Cuaderno de notas conjuntas:** Registro de comentarios entre Laura y Alejandro.
 
-La aplicación está preparada para funcionar directamente en GitHub Pages con URL pública accesible desde cualquier móvil, tablet o PC.
+---
+
+### 3. 👷‍♂️ Modo Dossier para el Aparejador y Constructor
+- Formato de tabla técnica imprimible en PDF con salto de página limpio (A4).
+- Exportación instantánea a **Excel / CSV**.
+- Resumen consolidado con mediciones y requisitos de montaje exactos para que la constructora presupueste la mano de obra.
+
+---
+
+### 4. 📱 Diseño Ultra-Responsivo Móvil
+- Cabecera compacta que no roba espacio útil en pantallas pequeñas.
+- Barra de navegación inferior fija estilo app nativa para alternar con un toque de pulgar entre Calidades, Inspiración, Aparejador y Guardar.
+- Selector de estancias con scroll horizontal táctil.
+- Resumen presupuestario colapsable para acceder inmediatamente al contenido.
+
+---
+
+### 5. ☁️ Sincronización en la Nube (GitHub Pages)
+- Guardado local automático en el navegador (`localStorage`).
+- Botón **"Subir Ahora a GitHub"** integrado en la web para persistir cambios directamente en el repositorio `valdemorillohalcon/valdemorillo-calidades` a través de GitHub REST API.
+- Descarga y restauración manual en archivo `.json`.
+
+---
+
+## 🌐 URLs de Producción
+
+- **Web en Vivo (GitHub Pages):**  
+  [https://valdemorillohalcon.github.io/valdemorillo-calidades/](https://valdemorillohalcon.github.io/valdemorillo-calidades/)
+- **Repositorio de Código en GitHub:**  
+  [https://github.com/valdemorillohalcon/valdemorillo-calidades](https://github.com/valdemorillohalcon/valdemorillo-calidades)
