@@ -1074,6 +1074,62 @@ body {
   font-weight: 700;
 }
 
+/* Filtros de Categorías Específicas de la Estancia */
+.room-categories-bar {
+  margin-bottom: 1rem;
+}
+
+.room-categories-scroll {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0.2rem 0;
+  white-space: nowrap;
+}
+
+.room-categories-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.room-cat-chip {
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: white;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.room-cat-chip:hover {
+  background: var(--bg-card-alt);
+  color: var(--text-main);
+  border-color: var(--border-focus);
+}
+
+.room-cat-chip.active {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+  font-weight: 700;
+  box-shadow: 0 1px 2px rgba(217, 119, 6, 0.1);
+}
+
+.room-cat-count {
+  font-size: 0.68rem;
+  opacity: 0.85;
+}
+
 /* Grid de Inspiraciones */
 .inspirations-header-row {
   display: flex;
