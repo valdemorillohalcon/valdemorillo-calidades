@@ -23,6 +23,7 @@ let state = {
   spaces: [],
   currentView: "materials", // 'materials' | 'spaces' | 'dossier'
   currentSpaceId: "salon",
+  currentSpaceCategoryFilter: "todas", // Filtro por categoría específica de la estancia
   currentFilter: "criteria", // 'criteria' por defecto para destacar lo que requiere decisión
   currentChapter: "todos",
   searchQuery: "",
@@ -59,9 +60,10 @@ function loadData() {
     saveMaterialsLocally();
   }
 
-  // Cargar espacios e inspiración
+  // Cargar espacios e inspiración (con migración a categorías por estancia)
+  const spacesVersion = localStorage.getItem("valdemorillo_spaces_version");
   const savedSpaces = localStorage.getItem(STORAGE_KEY_SPACES);
-  if (savedSpaces) {
+  if (savedSpaces && spacesVersion === "v2_room_cats") {
     try {
       state.spaces = JSON.parse(savedSpaces);
     } catch (e) {
@@ -70,6 +72,7 @@ function loadData() {
     }
   } else {
     state.spaces = JSON.parse(JSON.stringify(INITIAL_SPACES));
+    try { localStorage.setItem("valdemorillo_spaces_version", "v2_room_cats"); } catch(e){}
     saveSpacesLocally();
   }
 }
@@ -308,6 +311,7 @@ function renderSpacePills() {
 
 function selectSpace(spaceId) {
   state.currentSpaceId = spaceId;
+  state.currentSpaceCategoryFilter = "todas";
   renderSpacePills();
   renderCurrentSpace();
 }
@@ -316,7 +320,7 @@ function renderCurrentSpace() {
   const space = state.spaces.find(s => s.id === state.currentSpaceId) || state.spaces[0];
   if (!space) return;
 
-  // Hero Card
+  // Hero Card con datos del Plano 03
   document.getElementById("room-name").textContent = space.name;
   document.getElementById("room-plan-code").textContent = space.planCode || "Plano Básico";
   document.getElementById("room-surface").innerHTML = `<i data-lucide="maximize-2" style="width: 13px; height: 13px;"></i> ${space.surface} útiles`;
@@ -332,15 +336,65 @@ function renderCurrentSpace() {
     checklist.appendChild(li);
   });
 
-  // Inspiraciones Grid
-  const grid = document.getElementById("inspirations-container");
-  const countBadge = document.getElementById("room-insp-count");
-  const inspirations = space.inspirations || [];
+  // Categorías específicas de la estancia activa
+  const roomCats = (typeof ROOM_CATEGORIES !== "undefined" && ROOM_CATEGORIES[space.id]) || [];
+  const catScroll = document.getElementById("room-categories-scroll");
+  const allInspirations = space.inspirations || [];
 
-  countBadge.textContent = inspirations.length;
+  if (catScroll) {
+    catScroll.innerHTML = "";
+
+    // Chip "Todas"
+    const allChip = document.createElement("button");
+    allChip.className = `room-cat-chip ${state.currentSpaceCategoryFilter === "todas" ? "active" : ""}`;
+    allChip.innerHTML = `Todas <span class="room-cat-count">(${allInspirations.length})</span>`;
+    allChip.onclick = () => filterRoomCategory("todas");
+    catScroll.appendChild(allChip);
+
+    // Chips de categorías personalizadas de la estancia
+    roomCats.forEach(cat => {
+      const count = allInspirations.filter(i => i.categoryTag === cat).length;
+      const chip = document.createElement("button");
+      chip.className = `room-cat-chip ${state.currentSpaceCategoryFilter === cat ? "active" : ""}`;
+      chip.innerHTML = `${escapeHtml(cat)} <span class="room-cat-count">(${count})</span>`;
+      chip.onclick = () => filterRoomCategory(cat);
+      catScroll.appendChild(chip);
+    });
+
+    // Chip para otros elementos no clasificados (si existen)
+    const otherInspirations = allInspirations.filter(i => i.categoryTag && !roomCats.includes(i.categoryTag));
+    if (otherInspirations.length > 0) {
+      const otherChip = document.createElement("button");
+      otherChip.className = `room-cat-chip ${state.currentSpaceCategoryFilter === "otros" ? "active" : ""}`;
+      otherChip.innerHTML = `Otros detalles <span class="room-cat-count">(${otherInspirations.length})</span>`;
+      otherChip.onclick = () => filterRoomCategory("otros");
+      catScroll.appendChild(otherChip);
+    }
+  }
+
+  // Filtrado de inspiraciones según el chip activo
+  let filteredInspirations = allInspirations;
+  if (state.currentSpaceCategoryFilter && state.currentSpaceCategoryFilter !== "todas") {
+    if (state.currentSpaceCategoryFilter === "otros") {
+      filteredInspirations = allInspirations.filter(i => i.categoryTag && !roomCats.includes(i.categoryTag));
+    } else {
+      filteredInspirations = allInspirations.filter(i => i.categoryTag === state.currentSpaceCategoryFilter);
+    }
+  }
+
+  // Actualizar contador
+  const countBadge = document.getElementById("room-insp-count");
+  if (countBadge) {
+    countBadge.textContent = filteredInspirations.length === allInspirations.length 
+      ? allInspirations.length 
+      : `${filteredInspirations.length} de ${allInspirations.length}`;
+  }
+
+  const grid = document.getElementById("inspirations-container");
   grid.innerHTML = "";
 
-  if (inspirations.length === 0) {
+  // Estado vacío: Sin inspiraciones en toda la estancia
+  if (allInspirations.length === 0) {
     grid.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem; background: white; border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
         <i data-lucide="image" style="width: 48px; height: 48px; color: var(--text-light); margin-bottom: 0.75rem;"></i>
@@ -357,7 +411,29 @@ function renderCurrentSpace() {
     return;
   }
 
-  inspirations.forEach(insp => {
+  // Estado vacío: Sin inspiraciones en esta categoría específica
+  if (filteredInspirations.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1.25rem; background: white; border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
+        <i data-lucide="folder-search" style="width: 40px; height: 40px; color: var(--text-light); margin-bottom: 0.5rem;"></i>
+        <h3 style="font-size: 1.05rem; color: var(--text-main);">Sin fotos en "${escapeHtml(state.currentSpaceCategoryFilter)}"</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
+          Todavía no habéis guardado ninguna foto de inspiración para esta categoría en ${escapeHtml(space.name)}.
+        </p>
+        <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 0.9rem; flex-wrap: wrap;">
+          <button class="btn btn-outline btn-sm" onclick="filterRoomCategory('todas')">Ver Todas (${allInspirations.length})</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddInspirationModalWithCategory('${escapeHtml(state.currentSpaceCategoryFilter)}')">
+            <i data-lucide="plus"></i> Añadir foto en esta categoría
+          </button>
+        </div>
+      </div>
+    `;
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
+
+  // Renderizar tarjetas de inspiración
+  filteredInspirations.forEach(insp => {
     const card = document.createElement("div");
     card.className = "inspiration-card";
 
@@ -414,6 +490,50 @@ function renderCurrentSpace() {
   }
 }
 
+function filterRoomCategory(category) {
+  state.currentSpaceCategoryFilter = category;
+  renderCurrentSpace();
+}
+
+function openAddInspirationModalWithCategory(cat) {
+  openAddInspirationModal();
+  const catSelect = document.getElementById("insp-category");
+  if (catSelect && cat && cat !== "todas" && cat !== "otros") {
+    catSelect.value = cat;
+  }
+}
+
+function updateInspirationCategoriesModal(spaceId, selectedCat) {
+  const catSelect = document.getElementById("insp-category");
+  if (!catSelect) return;
+  catSelect.innerHTML = "";
+
+  const roomCats = (typeof ROOM_CATEGORIES !== "undefined" && ROOM_CATEGORIES[spaceId]) ? ROOM_CATEGORIES[spaceId] : [
+    "Iluminación & Techos",
+    "Paredes & Revestimientos",
+    "Mobiliario & Distribución",
+    "Ventanas & Cerramientos",
+    "Suelos & Pavimentos",
+    "Detalles Constructivos"
+  ];
+
+  roomCats.forEach(cat => {
+    const opt = document.createElement("option");
+    opt.value = cat;
+    opt.textContent = cat;
+    if (selectedCat && selectedCat === cat) {
+      opt.selected = true;
+    }
+    catSelect.appendChild(opt);
+  });
+
+  const optOther = document.createElement("option");
+  optOther.value = "Otro elemento / Detalle general";
+  optOther.textContent = "Otro elemento / Detalle general";
+  if (selectedCat === optOther.value) optOther.selected = true;
+  catSelect.appendChild(optOther);
+}
+
 // Extractor / Vista previa de imagen en modal
 function handleImageUrlInput(val) {
   const url = (val || "").trim();
@@ -447,8 +567,8 @@ function openAddInspirationModal() {
   document.getElementById("modal-insp-title").textContent = "Añadir Foto de Inspiración";
   document.getElementById("edit-insp-id").value = "";
   document.getElementById("insp-space-id").value = state.currentSpaceId;
+  updateInspirationCategoriesModal(state.currentSpaceId);
   document.getElementById("insp-title").value = "";
-  document.getElementById("insp-category").value = "Iluminación & Techos";
   document.getElementById("insp-image-url").value = "";
   document.getElementById("insp-desc").value = "";
   document.getElementById("insp-constructive").value = "";
@@ -467,8 +587,8 @@ function openEditInspirationModal(inspId) {
   document.getElementById("modal-insp-title").textContent = "Editar Inspiración";
   document.getElementById("edit-insp-id").value = insp.id;
   document.getElementById("insp-space-id").value = space.id;
+  updateInspirationCategoriesModal(space.id, insp.categoryTag);
   document.getElementById("insp-title").value = insp.title || "";
-  document.getElementById("insp-category").value = insp.categoryTag || "Iluminación & Techos";
   document.getElementById("insp-image-url").value = insp.imageUrl || "";
   document.getElementById("insp-desc").value = insp.description || "";
   document.getElementById("insp-constructive").value = insp.constructiveNotes || "";
@@ -1244,6 +1364,8 @@ async function syncDataToGitHubCloud() {
 const INITIAL_MATERIALS = ${JSON.stringify(state.materials, null, 2)};
 
 const CHAPTERS = ${JSON.stringify(CHAPTERS, null, 2)};
+
+const ROOM_CATEGORIES = ${JSON.stringify(typeof ROOM_CATEGORIES !== "undefined" ? ROOM_CATEGORIES : {}, null, 2)};
 
 const INITIAL_SPACES = ${JSON.stringify(state.spaces, null, 2)};
 `;
