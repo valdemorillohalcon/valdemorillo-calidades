@@ -249,6 +249,13 @@
         </span>
       </div>
 
+      <!-- Filtros de categorías específicas de la estancia -->
+      <div class="room-categories-bar" id="room-categories-bar">
+        <div class="room-categories-scroll" id="room-categories-scroll">
+          <!-- Chips de categorías generados dinámicamente -->
+        </div>
+      </div>
+
       <div class="inspirations-grid" id="inspirations-container">
         <!-- Tarjetas visuales generadas dinámicamente -->
       </div>
@@ -336,23 +343,16 @@
         <input type="hidden" id="edit-insp-id">
 
         <div class="form-row">
-          <div class="form-group" style="flex: 1.5;">
+          <div class="form-group" style="flex: 1.2;">
             <label>Estancia de la Casa *</label>
-            <select id="insp-space-id" class="form-control">
+            <select id="insp-space-id" class="form-control" onchange="updateInspirationCategoriesModal(this.value)">
               <!-- Rellenado dinámico con las estancias del plano -->
             </select>
           </div>
-          <div class="form-group" style="flex: 1;">
-            <label>Categoría / Elemento</label>
+          <div class="form-group" style="flex: 1.8;">
+            <label>Categoría Específica de esta Estancia *</label>
             <select id="insp-category" class="form-control">
-              <option value="Iluminación & Techos">Iluminación & Techos</option>
-              <option value="Carpintería & Puertas">Carpintería & Puertas</option>
-              <option value="Mobiliario & Armarios">Mobiliario & Armarios</option>
-              <option value="Pavimentos & Alicatados">Pavimentos & Alicatados</option>
-              <option value="Sanitarios & Grifería">Sanitarios & Grifería</option>
-              <option value="Pintura & Decoración">Pintura & Decoración</option>
-              <option value="Albañilería & Chimenea">Albañilería & Chimenea</option>
-              <option value="Exteriores & Porches">Exteriores & Porches</option>
+              <!-- Rellenado dinámicamente según la estancia elegida -->
             </select>
           </div>
         </div>
