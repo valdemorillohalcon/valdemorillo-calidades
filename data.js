@@ -2444,5 +2444,434 @@ const CHAPTERS = [
   { id: "revestimientos", name: "Revestimientos y Pavimentos", icon: "grid" },
   { id: "carpinteria-interior", name: "Carpintería Interior y Armarios", icon: "door-closed" },
   { id: "carpinteria-exterior", name: "Carpintería Exterior y Ventanas", icon: "maximize" },
-  { id: "urbanizacion", name: "Valla, Parcela, Pinturas y Previsiones", icon: "tree-pine" }
 ];
+
+// =========================================================================
+// ESTANCIAS Y ESPACIOS DEL PROYECTO BÁSICO (PLANTA BAJA - PLANO 03)
+// =========================================================================
+const INITIAL_SPACES = [
+  {
+    id: "salon",
+    name: "Salón - Comedor",
+    surface: "33,56 m²",
+    surfaceNumber: 33.56,
+    orientation: "Sur / Suroeste (Máxima luz natural y vistas a parcela)",
+    planCode: "Plano 03 · Salón-Comedor S=33.56m²",
+    description: "Espacio central de la vivienda con cubierta inclinada singular, chimenea francesa, gran ventanal en esquina V5 (3,08m de ancho) con parte superior inclinada hacia el faldón y dos ventanales correderos V3 a terraza sur.",
+    keyConstructiveElements: [
+      "Chimenea francesa interior: Tiro refractario y refuerzo estructural de forjado.",
+      "Ventanal V5 singular (3,08 x 2,40 + 1,41m triángulo): Replanteo exacto con cerrajero/carpintero de PVC.",
+      "Falso techo PYL con descuelgue hasta 60cm para conductos de climatización.",
+      "Suelo radiante/refrescante continúo con porcelánico rectificado C3.",
+      "Tomas de datos RJ45 y enchufes empotrados a eje de mueble de TV y chimenea."
+    ],
+    inspirations: [
+      {
+        id: "insp-sal-1",
+        title: "Foseado perimetral con cortinero oculto y tira LED continua",
+        categoryTag: "Iluminación & Techos",
+        imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=salon%20luz%20foseada%20cortinero",
+        description: "Iluminación indirecta cálida perimetral que baña las paredes y esconde los rieles de las cortinas tras el falso techo.",
+        constructiveNotes: "Pladuristas deben ejecutar garganta de 15x15 cm junto a los ventanales V3 y V5. Electricista debe dejar tira LED COB 2700K cálida con perfil disipador de aluminio y transformador oculto registrable."
+      },
+      {
+        id: "insp-sal-2",
+        title: "Chimenea integrada enrasada con bancada baja de obra",
+        categoryTag: "Albañilería & Revestimientos",
+        imageUrl: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=modern%20fireplace%20living%20room",
+        description: "Hogar de leña cerrado con cristal guillotina o lateral, revestido con placas de yeso ignífugas FOC y bancada volada de porcelánico a juego.",
+        constructiveNotes: "Forrar el tiro con placas ignífugas rosa (Pladur FOC) y lana de roca con aluminio. Prever rejilla de convección superior y toma de aire exterior inferior para tiro limpio sin humos."
+      }
+    ]
+  },
+  {
+    id: "cocina",
+    name: "Cocina",
+    surface: "20,44 m²",
+    surfaceNumber: 20.44,
+    orientation: "Noreste / Este (Luz de mañana)",
+    planCode: "Plano 03 · Cocina S=20.44m²",
+    description: "Cocina espaciosa con isla central de cocción/desayuno, puerta doble de paso lacada P4 (1,10m) hacia zona de día, ventanales V4 hacia fachada y porche de entrada.",
+    keyConstructiveElements: [
+      "Isla central: Tomas de electricidad, desagüe y acometida bajo suelo antes de hormigonar el recrecido.",
+      "Extracción de humos / Campana de techo integrada en falso techo de 60cm.",
+      "Puerta doble lacada P4 de 1,10m: Replantear premarco de suelo a techo.",
+      "Puntos de luz para focos empotrados antideslumbrantes y luz bajo muebles altos.",
+      "Salida de ventilación forzada VMC según DB-HS3."
+    ],
+    inspirations: [
+      {
+        id: "insp-coc-1",
+        title: "Isla central con encimera porcelánica y barra volada en madera",
+        categoryTag: "Mobiliario & Encimeras",
+        imageUrl: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=kitchen%20island%20wood%20ceramic",
+        description: "Gran isla con zona de cocción por inducción enrasada, enchufes escamoteables y barra de desayunos para 3-4 personas.",
+        constructiveNotes: "Fontanero y electricista deben llevar tubos pasantes al centro exacto de la isla antes de verter el mortero autonivelante del suelo radiante. Refuerzo de perfiles en falso techo si la campana es suspendida."
+      },
+      {
+        id: "insp-coc-2",
+        title: "Armariada de suelo a techo en blanco mate con gola oculta",
+        categoryTag: "Carpintería",
+        imageUrl: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=white%20minimal%20kitchen",
+        description: "Frentes limpios sin tiradores para integrar frigorífico, horno y microondas en columna y columna despensera.",
+        constructiveNotes: "Planimetría perfecta en tabique de Pladur. Dejar enchufes independientes de 16A y 25A para horno, microondas y placa con magneto propio en cuadro."
+      }
+    ]
+  },
+  {
+    id: "dormitorio-principal",
+    name: "Habitación Principal (Dormitorio 1)",
+    surface: "16,38 m²",
+    surfaceNumber: 16.38,
+    orientation: "Sur (Sol directo y acceso a porche sur)",
+    planCode: "Plano 03 · Dormitorio 1 S=16.38m²",
+    description: "Dormitorio de matrimonio suite principal con salida directa al porche sur mediante balconera V1 (1,50x2,40m) con persiana motorizada, conectado a vestidor propio y baño en suite.",
+    keyConstructiveElements: [
+      "Balconera corredera V1 con persiana motorizada y sellado hermético.",
+      "Termostato de aerotermia independiente en pared lateral.",
+      "Cabecero: Conmutadores de luz a ambos lados de la cama y enchufes con cargador USB.",
+      "Previsión de papel pintado decorativo textil lavable.",
+      "Descuelgue de falso techo para climatización silenciosa."
+    ],
+    inspirations: [
+      {
+        id: "insp-dp-1",
+        title: "Cabecero con papel textil lino y apliques de lectura orientables",
+        categoryTag: "Revestimientos & Iluminación",
+        imageUrl: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=bedroom%20headboard%20wallpaper%20linen",
+        description: "Papel vinílico con textura acogedora que enmarca la cama matrimonial de 180cm, complementado con luces de lectura cálidas.",
+        constructiveNotes: "Puntos de luz en pared a 90 cm sobre suelo terminado con encendido independiente desde cada lado de la cama y desde la puerta de entrada."
+      }
+    ]
+  },
+  {
+    id: "vestidor",
+    name: "Vestidor Principal",
+    surface: "4,92 m²",
+    surfaceNumber: 4.92,
+    orientation: "Oeste / Noroeste (Ventana propia V6)",
+    planCode: "Plano 03 · Vestidor 1 S=4.92m²",
+    description: "Espacio de vestidor comunicado con el dormitorio 1 y el baño principal. Cuenta con frente para armario A1 de 3,50m de longitud (fondo 0,60m) tipo IKEA PAX y ventana V6 con vidrio traslúcido.",
+    keyConstructiveElements: [
+      "Hueco de armario empotrado A1 de 3,50m x 2,60m de alto.",
+      "Clema superior en techo para transformadores de iluminación LED de armarios.",
+      "Tapajuntas de 7cm lacado en blanco para rematar módulos IKEA PAX.",
+      "Ventana oscilobatiente V6 de 0,75 x 2,40m con vidrio traslúcido para intimidad."
+    ],
+    inspirations: [
+      {
+        id: "insp-vest-1",
+        title: "Vestidor modulado con iluminación LED en barras e interiores",
+        categoryTag: "Carpintería & Organización",
+        imageUrl: "https://images.unsplash.com/photo-1558997519-83ea9252def8?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=walk%20in%20closet%20pax%20ikea%20lighting",
+        description: "Módulos PAX en acabado roble o blanco con zapateros extraíbles, cajoneras con frente de vidrio y barras con sensor de apertura.",
+        constructiveNotes: "El constructor debe dejar el hueco a escuadra perfecta a 3,52 m libres y pasar la clema eléctrica en el falso techo centralizada."
+      }
+    ]
+  },
+  {
+    id: "bano-1",
+    name: "Baño Principal (En Suite)",
+    surface: "6,10 m²",
+    surfaceNumber: 6.10,
+    orientation: "Oeste (Ventana V6 con vidrio traslúcido)",
+    planCode: "Plano 03 · Baño 1 S=6.10m²",
+    description: "Baño completo integrado en la suite principal. Alberga mueble suspendido de lavabo doble (1,20 a 1,60m), plato de ducha de resina antideslizante de gran formato (160-180cm) con mampara de 6mm antical, inodoro compacto Start/Stop y ventana V6.",
+    keyConstructiveElements: [
+      "Mueble doble seno suspendido: Tabique de Pladur WA hidrófugo reforzado con chapa de acero.",
+      "Plato de ducha resina extraplano 160-180 x 80cm: Nivelación perfecta de solera.",
+      "Zócalo impermeabilizante tipo Schlüter-Kerdi subiendo mínimo 40cm en duchas.",
+      "Alicatado hasta techo en formato 40x120cm porcelánico rectificado.",
+      "Grifería termostática empotrada o en columna con rociador cenital.",
+      "Bote sifónico registrable y extracción VMC híbrida."
+    ],
+    inspirations: [
+      {
+        id: "insp-b1-1",
+        title: "Mueble suspendido roble con lavabo sobre encimera y grifería negra",
+        categoryTag: "Sanitarios & Grifería",
+        imageUrl: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=bathroom%20vanity%20wood%20black%20faucet",
+        description: "Mueble volado en madera cálida con 2 lavabos cerámicos blancos y griferías empotradas en negro mate.",
+        constructiveNotes: "Toma de agua a 105 cm de suelo si es grifo empotrado en pared, o a 60 cm si va sobre encimera. Reforzar el bastidor de Pladur con madera o perfiles dobles antes de alicatar."
+      },
+      {
+        id: "insp-b1-2",
+        title: "Ducha de gran formato con hornacina iluminada para botes de gel",
+        categoryTag: "Alicatados & Obra",
+        imageUrl: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=shower%20niche%20led",
+        description: "Hornacina o nicho de obra integrado en la pared de la ducha con tira LED IP65 estanca y alicatado en inglete continuo.",
+        constructiveNotes: "Construir hornacina de 30x60cm aprovechando el espesor del trasdosado de fontanería. Impermeabilizar el cajón con lámina Kerdi antes de colocar el porcelánico."
+      }
+    ]
+  },
+  {
+    id: "despacho",
+    name: "Despacho / Zona Teletrabajo",
+    surface: "9,86 m²",
+    surfaceNumber: 9.86,
+    orientation: "Sur (Acceso directo a terraza sur)",
+    planCode: "Plano 03 · Despacho S=9.86m²",
+    description: "Estancia versátil para teletrabajo y estudio con salida directa a la terraza exterior por balconera V1 (1,50x2,40m) con persiana motorizada y armario empotrado A2 de 1,63m.",
+    keyConstructiveElements: [
+      "Armario empotrado A2 de 1,63m madera lacada con clema superior.",
+      "Toma de datos doble RJ45 Cat.6 apantallada a cota de escritorio.",
+      "Balconera V1 hacia porche sur con persiana motorizada.",
+      "Suelo porcelánico continuo apto para ruedas de silla de oficina."
+    ],
+    inspirations: [
+      {
+        id: "insp-desp-1",
+        title: "Escritorio integrado con estanterías de madera y luz lineal",
+        categoryTag: "Mobiliario & Electricidad",
+        imageUrl: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=home%20office%20desk%20shelving",
+        description: "Espacio de trabajo despejado con tomas ocultas bajo mesa para ordenadores, monitores y cargadores.",
+        constructiveNotes: "Pasar canaleta empotrada de 40mm para cables HDMI/USB entre la pared del escritorio y la zona de pantalla."
+      }
+    ]
+  },
+  {
+    id: "dormitorio-2",
+    name: "Habitación 2 (Dormitorio 2)",
+    surface: "11,65 m²",
+    surfaceNumber: 11.65,
+    orientation: "Sur (Balconera V1 a terraza sur)",
+    planCode: "Plano 03 · Dormitorio 2 S=11.65m²",
+    description: "Dormitorio secundario espacioso con luz natural del sur, salida directa a terraza por balconera V1 con persiana motorizada y armario empotrado A3 de 1,97m.",
+    keyConstructiveElements: [
+      "Armario empotrado A3 de 1,97m madera lacada de suelo a techo.",
+      "Balconera V1 con persiana motorizada de aluminio térmico.",
+      "Toma de TV y toma de datos RJ45 en pared frontal de cama.",
+      "Puerta de paso semi-maciza lacada en blanco de 82,5 x 203cm con goma hermética."
+    ],
+    inspirations: [
+      {
+        id: "insp-d2-1",
+        title: "Dormitorio acogedor con colores neutros y lamas de madera",
+        categoryTag: "Decoración & Pinturas",
+        imageUrl: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=guest%20bedroom%20wood%20neutral",
+        description: "Ambiente cálido con iluminación indirecta, tonos tierra y textiles naturales de lino y algodón.",
+        constructiveNotes: "Dejar cajas de mecanismos simétricas a eje de cama para ancho de 150cm con pulsadores conmutados."
+      }
+    ]
+  },
+  {
+    id: "bano-2",
+    name: "Baño 2 (Baño Secundario)",
+    surface: "5,40 m²",
+    surfaceNumber: 5.40,
+    orientation: "Oeste (Ventana V2 traslúcida 1,40m)",
+    planCode: "Plano 03 · Baño 2 S=5.40m²",
+    description: "Baño completo que da servicio al dormitorio 2 y despacho. Dispone de plato de ducha de resina o bañera, mueble de lavabo, inodoro compacto con tapa amortiguada y gran ventana V2 de 1,40 x 2,40m con vidrio traslúcido.",
+    keyConstructiveElements: [
+      "Ventana oscilobatiente V2 (1,40x2,40m): Máxima luz natural manteniendo la privacidad.",
+      "Suelo porcelánico decorativo C2 (tipo hidráulico o microcemento).",
+      "Plato de resina antideslizante C3 con desagüe lineal o convencional.",
+      "Puerta de paso lacada con condena de desbloqueo exterior.",
+      "Bote sifónico y extracción VMC."
+    ],
+    inspirations: [
+      {
+        id: "insp-b2-1",
+        title: "Suelo cerámico decorativo con azulejo blanco y grifería cromo",
+        categoryTag: "Pavimentos & Alicatados",
+        imageUrl: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=bathroom%20patterned%20tile%20floor",
+        description: "Contraste fresco y juvenil combinando baldosas geométricas en el suelo y paredes limpias en blanco mate.",
+        constructiveNotes: "Replantear el inicio del pavimento centrado respecto al mueble de lavabo para que los cortes queden en los rincones ocultos."
+      }
+    ]
+  },
+  {
+    id: "aseo-entrada",
+    name: "Aseo de Entrada / Cortesía",
+    surface: "2,62 m²",
+    surfaceNumber: 2.62,
+    orientation: "Norte (Ventana V4* traslúcida)",
+    planCode: "Plano 03 · Aseo S=2.62m²",
+    description: "Aseo de invitados situado estratégicamente junto a la entrada principal. Equipado con lavabo de cortesía, inodoro y ventana V4* con vidrio traslúcido.",
+    keyConstructiveElements: [
+      "Inodoro Rimless apoyado adosado a pared con sistema Start/Stop.",
+      "Lavabo compacto o mueble suspendido estrecho (fondo reducido 40cm).",
+      "Pared con papel pintado decorativo en zona seca.",
+      "Ventana V4* oscilobatiente con vidrio traslúcido."
+    ],
+    inspirations: [
+      {
+        id: "insp-as-1",
+        title: "Aseo de diseño con papel botánico oscuro y espejo retroiluminado",
+        categoryTag: "Decoración & Espejos",
+        imageUrl: "https://images.unsplash.com/photo-1620626011761-996317b8d101?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=powder%20room%20dark%20wallpaper",
+        description: "Espacio con gran personalidad: papel decorativo de diseño, espejo redondo con luz trasera y lavabo tipo bol sobre encimera.",
+        constructiveNotes: "Punto de luz a 1,60 m de altura centrado para espejo retroiluminado con interruptor en puerta."
+      }
+    ]
+  },
+  {
+    id: "zona-trabajo",
+    name: "Zona de Trabajo / Distribuidor Abierto",
+    surface: "5,85 m²",
+    surfaceNumber: 5.85,
+    orientation: "Centro de la vivienda",
+    planCode: "Plano 03 · Zona de Trabajo S=5.85m²",
+    description: "Espacio bisagra abierto entre salón y cocina, idóneo para rincón de estudio, librería o mueble aparador.",
+    keyConstructiveElements: [
+      "Continuidad del suelo porcelánico imitación madera sin juntas de transición.",
+      "Iluminación puntual cenital con focos empotrados LED 3000K.",
+      "Puntos de fuerza para equipos o lámparas decorativas."
+    ],
+    inspirations: [
+      {
+        id: "insp-zt-1",
+        title: "Librería a medida de pladur con estantes de roble y luz",
+        categoryTag: "Carpintería & Pladur",
+        imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=built%20in%20bookshelf%20drywall",
+        description: "Librería integrada en el tabique que viste el paso entre cocina y salón.",
+        constructiveNotes: "Pladuristas deben reforzar las baldas con perfiles montantes dobles si van a soportar peso de libros."
+      }
+    ]
+  },
+  {
+    id: "entrada",
+    name: "Entrada / Zaguán y Porche",
+    surface: "3,83 m² (Zaguán) + 6,06 m² (Porche)",
+    surfaceNumber: 9.89,
+    orientation: "Norte (Acceso principal desde la calle)",
+    planCode: "Plano 03 · Entrada S=3.83m² + Porche Entrada S=6.06m²",
+    description: "Recibidor de la vivienda con armario empotrado A5 de 0,90m para abrigos y calzado, puerta blindada P1 bicolor y porche exterior cubierto en hormigón impreso.",
+    keyConstructiveElements: [
+      "Puerta principal blindada P1: Bastidor reforzado, cerradura 3 puntos, exterior madera / interior blanco.",
+      "Armario de entrada A5 de 0,90m con puertas lacadas.",
+      "Punto de luz exterior estanco IP65 en porche de entrada con encendido conmutado o temporizado.",
+      "Monitor de videoportero conectado a puerta de valla de calle."
+    ],
+    inspirations: [
+      {
+        id: "insp-ent-1",
+        title: "Recibidor con banco descalzador de madera y armario gabanero",
+        categoryTag: "Carpintería",
+        imageUrl: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=entryway%20bench%20closet",
+        description: "Zona de recibimiento muy funcional para dejar calzado y chaquetas al llegar a casa.",
+        constructiveNotes: "Tubo corrugado para el monitor de videoportero a 1,50m de altura junto a la puerta principal."
+      }
+    ]
+  },
+  {
+    id: "pasillo",
+    name: "Pasillo Distribuidor",
+    surface: "9,62 m²",
+    surfaceNumber: 9.62,
+    orientation: "Interior",
+    planCode: "Plano 03 · Pasillo S=9.62m²",
+    description: "Eje distribuidor que conecta de manera fluida y privada los dormitorios y baños de la vivienda. Incluye armario empotrado A4 de 1,26m para lencería del hogar.",
+    keyConstructiveElements: [
+      "Armario empotrado A4 de 1,26m con frentes lacados de suelo a techo.",
+      "Puntos de luz empotrados en falso techo con sensores de paso o encendido conmutado triple.",
+      "Puertas de paso de 82,5 cm de luz con goma de estanqueidad acústica."
+    ],
+    inspirations: [
+      {
+        id: "insp-pas-1",
+        title: "Pasillo con iluminación lineal y puertas suelo-techo",
+        categoryTag: "Carpintería & Puertas",
+        imageUrl: "https://images.unsplash.com/photo-1534349762230-e0cadf78f5da?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=hallway%20doors%20minimal",
+        description: "Ritmo limpio de puertas altas sin tapetas tradicionales con manivelas en negro mate.",
+        constructiveNotes: "Replantear dinteles de premarcos a 2,46m de altura antes de encintar los tabiques de Pladur."
+      }
+    ]
+  },
+  {
+    id: "tendedero",
+    name: "Tendedero & Lavandería",
+    surface: "3,60 m² (Útil interior) + Zona exterior",
+    surfaceNumber: 3.60,
+    orientation: "Norte",
+    planCode: "Plano 03 · Tendedero S=3.60m²",
+    description: "Espacio de servicio para lavadora, secadora, pila de lavar, con puerta exterior metálica de seguridad P2, celosía exterior fija de lamas de WPC color Ipe y previsión de hueco en forjado para futura escalera a bajo cubierta.",
+    keyConstructiveElements: [
+      "Corte de vigueta y viga brochal para hueco de futura escalera modular.",
+      "Puerta metálica de seguridad P2 hacia la parcela.",
+      "Celosía de composite WPC color Ipe o PVC imitación madera de 40x40x2800 mm.",
+      "Tomas de agua y desagüe dobles para lavadora y secadora.",
+      "3 puntos de luz y 3 enchufes de fuerza con protección contra humedad."
+    ],
+    inspirations: [
+      {
+        id: "insp-tend-1",
+        title: "Lavandería organizada en torre con pila bajo encimera y celosía exterior",
+        categoryTag: "Instalaciones & Mobiliario",
+        imageUrl: "https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=laundry%20room%20storage%20modern",
+        description: "Espacio de lavado compacto con muebles a medida sobre lavadora y secadora y escobero integrado.",
+        constructiveNotes: "Llaves de corte independientes para lavadora y pila. Toma de tierra independiente y desagüe con sifón antirretorno."
+      }
+    ]
+  },
+  {
+    id: "instalaciones",
+    name: "Cuarto Técnico de Instalaciones",
+    surface: "5,94 m²",
+    surfaceNumber: 5.94,
+    orientation: "Norte",
+    planCode: "Plano 03 · C.Instalaciones S=5.94m²",
+    description: "Corazón técnico de la vivienda donde se centraliza la bomba de calor de aerotermia, el acumulador de 200L para ACS, el depósito de inercia, los colectores de suelo radiante/refrescante, el cuadro general de protección eléctrica y el armario de telecomunicaciones.",
+    keyConstructiveElements: [
+      "Suelo con pendiente hacia sumidero sifónico de desagüe para posibles purgas.",
+      "Bancada antivibratoria para equipos de bombeo y aerotermia.",
+      "Cuadro eléctrico general con protecciones contra sobretensiones permanentes y transitorias.",
+      "Aislamiento térmico de tuberías de climatización con coquillas Armaflex."
+    ],
+    inspirations: [
+      {
+        id: "insp-inst-1",
+        title: "Cuarto de aerotermia limpio y ordenado con valvulería etiquetada",
+        categoryTag: "Aerotermia & Fontanería",
+        imageUrl: "https://images.unsplash.com/photo-1581094288338-2314dddb7ece?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=heat%20pump%20technical%20room",
+        description: "Instalación profesional con tuberías de cobre/PPR aisladas y colectores accesibles con tapas registrables.",
+        constructiveNotes: "Prever toma de agua fría con grifo de llenado y toma de corriente estanca para cada bomba circuladora y centralita."
+      }
+    ]
+  },
+  {
+    id: "exteriores",
+    name: "Porche, Terraza Sur y Parcela",
+    surface: "55 m² (Terraza Sur) + 35 m² (Parking)",
+    surfaceNumber: 90.00,
+    orientation: "Sur / Parcela exterior",
+    planCode: "Plano 03 & Secciones A-A y B-B",
+    description: "Zona exterior de disfrute con terraza sur de 55 m² (ancho 2,40m) conectada a dormitorios y salón, barbacoa de obra exterior, aparcamiento en grava de canto rodado (35 m²), valla a calle de piedra rústica y cancela automática.",
+    keyConstructiveElements: [
+      "Solado exterior porcelánico rectificado antideslizante C3 de 40x40cm con pendiente 1,5%.",
+      "Barbacoa de obra adosada a chimenea con tiro independiente.",
+      "Muro de valla a calle con chapado de piedra natural rústica y valla galvanizada de 13mm.",
+      "Puerta corredera/abatible motorizada de vehículos de 300x200cm con mando a distancia.",
+      "Tubo enterrado de riego con llaves de corte y línea para futuro cargador de coche eléctrico."
+    ],
+    inspirations: [
+      {
+        id: "insp-ext-1",
+        title: "Porche con solado porcelánico continuo y barbacoa de obra moderna",
+        categoryTag: "Exteriores & Barbacoa",
+        imageUrl: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1000&auto=format&fit=crop&q=80",
+        pinterestUrl: "https://www.pinterest.es/search/pins/?q=modern%20porch%20terrace%20barbecue",
+        description: "Terraza exterior protegida por el vuelo de cubierta, con zona de comedor de verano y pavimento antideslizante continuo.",
+        constructiveNotes: "El constructor debe impermeabilizar la solera con lámina drenante y mortero bicomponente elástico antes de alicatar para evitar humedades en la cámara sanitaria."
+      }
+    ]
+  }
+];
+
