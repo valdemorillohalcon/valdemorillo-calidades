@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control de Materiales y Calidades · Calle Alcón 9, Valdemorillo</title>
-  <meta name="description" content="Aplicación de selección de calidades, comparativa de materiales y cierre de presupuesto para Laura y Alejandro en Valdemorillo.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Control de Materiales & Inspiración · Calle Alcón 9, Valdemorillo</title>
+  <meta name="description" content="Portal de selección de calidades, comparativa de materiales, inspiración de espacios y presupuesto para Laura y Alejandro en Valdemorillo.">
   <link rel="stylesheet" href="styles.css">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -12,7 +12,7 @@
 <body>
 
   <!-- =========================================================================
-       CABECERA PRINCIPAL
+       CABECERA PRINCIPAL (DESKTOP & MOBILE COMPACTA)
        ========================================================================= -->
   <header class="main-header">
     <div class="header-container">
@@ -21,147 +21,244 @@
           <i data-lucide="home"></i>
         </div>
         <div class="header-titles">
-          <h1>CALLE ALCÓN N.º 9 · VALDEMORILLO</h1>
+          <h1>CALLE ALCÓN 9 · VALDEMORILLO</h1>
           <p>
-            <span>Laura & Alejandro</span>
-            <span>·</span>
-            <span>Control de Materiales & Calidades</span>
-            <span class="header-tag tag-energy-a">Calificación Energética A</span>
-            <span class="header-tag">Memoria 30/7/2026</span>
+            <span class="owners-tag">Laura & Alejandro</span>
+            <span class="desktop-only">·</span>
+            <span class="header-tag tag-energy-a">Clase Energética A</span>
+            <span class="header-tag desktop-only">Memoria 30/7/2026</span>
           </p>
         </div>
       </div>
 
-      <div class="header-actions">
-        <button class="btn btn-primary" id="btn-add-material">
-          <i data-lucide="plus-circle"></i> Nuevo Material
+      <!-- Barra de navegación principal en desktop -->
+      <nav class="main-nav desktop-only">
+        <button class="nav-btn active" id="nav-btn-materials" onclick="switchMainView('materials')">
+          <i data-lucide="layers"></i> Materiales & Presupuesto
         </button>
-        <button class="btn btn-secondary" id="btn-toggle-dossier">
+        <button class="nav-btn nav-btn-highlight" id="nav-btn-spaces" onclick="switchMainView('spaces')">
+          <i data-lucide="sparkles"></i> Inspiración de Espacios
+        </button>
+        <button class="nav-btn" id="nav-btn-dossier" onclick="switchMainView('dossier')">
           <i data-lucide="file-text"></i> Modo Aparejador
         </button>
-        <button class="btn btn-secondary" id="btn-open-backup">
-          <i data-lucide="save"></i> Respaldar / Cargar
+      </nav>
+
+      <div class="header-actions desktop-only">
+        <button class="btn btn-primary btn-sm" id="btn-top-add" onclick="handleTopAddAction()">
+          <i data-lucide="plus-circle"></i> <span id="top-add-label">Nuevo Material</span>
         </button>
-        <button class="btn btn-secondary" id="btn-open-github">
-          <i data-lucide="github"></i> Publicar en GitHub
+        <button class="btn btn-secondary btn-sm" id="btn-open-github" title="Sincronizar con GitHub">
+          <i data-lucide="cloud"></i> Guardar en GitHub
+        </button>
+        <button class="btn btn-secondary btn-sm" id="btn-open-backup" title="Respaldar datos">
+          <i data-lucide="save"></i> Copia JSON
+        </button>
+      </div>
+
+      <!-- Botón menú móvil rápido -->
+      <div class="mobile-header-quick mobile-only">
+        <button class="btn btn-primary btn-sm" id="btn-mobile-top-add" onclick="handleTopAddAction()">
+          <i data-lucide="plus"></i> <span id="mobile-top-add-label">Añadir</span>
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="openGitHubModal()">
+          <i data-lucide="cloud"></i>
         </button>
       </div>
     </div>
   </header>
 
   <!-- =========================================================================
-       DASHBOARD DE KPIs Y CONTROL PRESUPUESTARIO
+       SECCIÓN 1: VISTA DE MATERIALES Y CALIDADES
        ========================================================================= -->
-  <section class="kpi-section" id="kpi-section">
-    <div class="kpi-grid">
-      <div class="kpi-card kpi-total">
-        <div class="kpi-title">
-          <span>Total Presupuesto Materiales</span>
-          <i data-lucide="euro"></i>
-        </div>
-        <div class="kpi-value" id="kpi-total-val">0 €</div>
-        <div class="kpi-subtext" id="kpi-total-sub">Calculado según mediciones y mermas</div>
+  <div id="view-materials-container">
+    <!-- DASHBOARD DE KPIs Y CONTROL PRESUPUESTARIO -->
+    <section class="kpi-section" id="kpi-section">
+      <div class="kpi-mobile-toggle mobile-only" onclick="toggleKPIsMobile()">
+        <span style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.825rem; font-weight: 700;">
+          <i data-lucide="bar-chart-3" style="width: 14px; height: 14px; color: var(--accent);"></i>
+          Resumen Presupuestario: <span id="kpi-mobile-summary" style="color: var(--accent);">0 €</span>
+        </span>
+        <i data-lucide="chevron-down" id="kpi-mobile-chevron" style="width: 16px; height: 16px;"></i>
       </div>
 
-      <div class="kpi-card kpi-closed">
-        <div class="kpi-title">
-          <span>Materiales Cerrados</span>
-          <i data-lucide="check-circle-2"></i>
+      <div class="kpi-grid" id="kpi-grid-container">
+        <div class="kpi-card kpi-total">
+          <div class="kpi-title">
+            <span>Total Materiales Estimado</span>
+            <i data-lucide="euro"></i>
+          </div>
+          <div class="kpi-value" id="kpi-total-val">0 €</div>
+          <div class="kpi-subtext" id="kpi-total-sub">Con mediciones y factor merma</div>
         </div>
-        <div class="kpi-value" id="kpi-closed-val">0 €</div>
-        <div class="kpi-subtext" id="kpi-closed-sub">0 de 0 partidas cerradas</div>
-        <div class="kpi-progress-bar">
-          <div class="kpi-progress-fill" id="kpi-progress-fill" style="width: 0%;"></div>
+
+        <div class="kpi-card kpi-closed">
+          <div class="kpi-title">
+            <span>Partidas Cerradas</span>
+            <i data-lucide="check-circle-2"></i>
+          </div>
+          <div class="kpi-value" id="kpi-closed-val">0 €</div>
+          <div class="kpi-subtext" id="kpi-closed-sub">0 de 0 partidas cerradas</div>
+          <div class="kpi-progress-bar">
+            <div class="kpi-progress-fill" id="kpi-progress-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-criteria">
+          <div class="kpi-title">
+            <span>Criterio Laura & Alejandro</span>
+            <i data-lucide="sparkles"></i>
+          </div>
+          <div class="kpi-value" id="kpi-criteria-val">0</div>
+          <div class="kpi-subtext" id="kpi-criteria-sub">Elementos a decidir</div>
+        </div>
+
+        <div class="kpi-card kpi-pending">
+          <div class="kpi-title">
+            <span>Decisiones Pendientes</span>
+            <i data-lucide="clock"></i>
+          </div>
+          <div class="kpi-value" id="kpi-pending-val">0</div>
+          <div class="kpi-subtext" id="kpi-pending-sub">Por elegir o en estudio</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BARRA DE CONTROLES, FILTROS Y BÚSQUEDA -->
+    <section class="controls-section" id="controls-section">
+      <div class="controls-card">
+        <!-- Pestañas con scroll horizontal táctil suave en móvil -->
+        <div class="filter-tabs-scroll">
+          <div class="filter-tabs">
+            <button class="filter-tab tab-criteria active" data-filter="criteria">
+              <i data-lucide="sparkles"></i> Criterio Laura & Alejandro
+              <span class="badge-count" id="count-criteria">0</span>
+            </button>
+            <button class="filter-tab" data-filter="all">
+              <i data-lucide="layers"></i> Toda la Obra
+              <span class="badge-count" id="count-all">0</span>
+            </button>
+            <button class="filter-tab" data-filter="pending">
+              <i data-lucide="alert-circle"></i> Pendientes
+              <span class="badge-count" id="count-pending">0</span>
+            </button>
+            <button class="filter-tab" data-filter="reviewing">
+              <i data-lucide="search"></i> En Valoración
+              <span class="badge-count" id="count-reviewing">0</span>
+            </button>
+            <button class="filter-tab" data-filter="selected">
+              <i data-lucide="check-check"></i> Cerrados
+              <span class="badge-count" id="count-selected">0</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-inputs-row">
+          <div class="search-box">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="search-input" class="search-input" placeholder="Buscar material, estancia, IKEA, Simon...">
+          </div>
+
+          <select id="select-chapter" class="select-chapter">
+            <option value="todos">Todos los Capítulos</option>
+            <!-- Rellenado dinámicamente -->
+          </select>
+
+          <select id="select-sort" class="select-sort desktop-only">
+            <option value="default">Orden por Defecto</option>
+            <option value="price-desc">Precio: Mayor a Menor</option>
+            <option value="price-asc">Precio: Menor a Mayor</option>
+            <option value="name">Alfabético</option>
+            <option value="pending-first">Pendientes Primero</option>
+          </select>
+
+          <button class="btn btn-outline btn-sm desktop-only" id="btn-export-csv" title="Descargar Excel / CSV">
+            <i data-lucide="table"></i> CSV
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- LISTADO DE TARJETAS DE MATERIALES -->
+    <main class="content-section" id="content-section">
+      <div class="materials-grid" id="materials-container">
+        <!-- Generado dinámicamente desde app.js -->
+      </div>
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       SECCIÓN 2: INSPIRACIÓN DE ESPACIOS (NUEVA SECCIÓN MOODBOARD)
+       ========================================================================= -->
+  <section class="spaces-section" id="spaces-view" style="display: none;">
+    <div class="spaces-container">
+      <!-- Selector horizontal táctil de Estancias de la casa -->
+      <div class="spaces-nav-wrapper">
+        <div class="spaces-nav-scroll" id="spaces-pills-container">
+          <!-- Píldoras de estancias generadas dinámicamente -->
         </div>
       </div>
 
-      <div class="kpi-card kpi-criteria">
-        <div class="kpi-title">
-          <span>Criterio Propietarios</span>
-          <i data-lucide="sparkles"></i>
+      <!-- Tarjeta Resumen de la Estancia Seleccionada con datos del Plano 03 -->
+      <div class="room-hero-card" id="room-hero-card">
+        <div class="room-hero-header">
+          <div>
+            <div class="room-plan-tag" id="room-plan-code">Plano 03 · Marta Echave Etchecopar</div>
+            <h2 class="room-title" id="room-name">Salón - Comedor</h2>
+            <div class="room-meta">
+              <span class="room-badge-surface" id="room-surface">
+                <i data-lucide="maximize-2"></i> 33,56 m² útiles
+              </span>
+              <span class="room-badge-orient" id="room-orient">
+                <i data-lucide="compass"></i> Sur / Suroeste
+              </span>
+            </div>
+          </div>
+
+          <div class="room-hero-actions">
+            <button class="btn btn-primary" onclick="openAddInspirationModal()">
+              <i data-lucide="image-plus"></i> Añadir Foto de Inspiración
+            </button>
+          </div>
         </div>
-        <div class="kpi-value" id="kpi-criteria-val">0</div>
-        <div class="kpi-subtext" id="kpi-criteria-sub">Partidas que requieren decisión</div>
+
+        <p class="room-description" id="room-desc">
+          Espacio central de la vivienda con cubierta inclinada singular, chimenea francesa, gran ventanal en esquina V5 y ventanales correderos a terraza sur.
+        </p>
+
+        <!-- Acordeón de elementos constructivos clave del plano -->
+        <div class="room-constructive-checklist">
+          <div class="constructive-checklist-title">
+            <i data-lucide="hard-hat" style="width: 14px; height: 14px; color: var(--accent);"></i>
+            <strong>Elementos constructivos clave del proyecto básico a prever para la obra:</strong>
+          </div>
+          <ul class="constructive-checklist-items" id="room-checklist-items">
+            <!-- Rellenado dinámico -->
+          </ul>
+        </div>
       </div>
 
-      <div class="kpi-card kpi-pending">
-        <div class="kpi-title">
-          <span>Decisiones Pendientes</span>
-          <i data-lucide="clock"></i>
-        </div>
-        <div class="kpi-value" id="kpi-pending-val">0</div>
-        <div class="kpi-subtext" id="kpi-pending-sub">Por elegir o en valoración</div>
+      <!-- Galería Moodboard de Inspiraciones de la Estancia -->
+      <div class="inspirations-header-row">
+        <h3 class="inspirations-count-title">
+          <span>Referencias Visuales e Ideas</span>
+          <span class="badge-count" id="room-insp-count">0</span>
+        </h3>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">
+          Fotos de Pinterest, catálogos y notas constructivas para el constructor
+        </span>
+      </div>
+
+      <div class="inspirations-grid" id="inspirations-container">
+        <!-- Tarjetas visuales generadas dinámicamente -->
       </div>
     </div>
   </section>
 
   <!-- =========================================================================
-       BARRA DE CONTROLES, FILTROS Y BÚSQUEDA
+       SECCIÓN 3: MODO DOSSIER TÉCNICO (APAREJADOR Y CONSTRUCTOR)
        ========================================================================= -->
-  <section class="controls-section" id="controls-section">
-    <div class="controls-card">
-      <div class="filter-tabs">
-        <button class="filter-tab tab-criteria active" data-filter="criteria">
-          <i data-lucide="sparkles"></i> Criterio Laura & Alejandro
-          <span class="badge-count" id="count-criteria">0</span>
-        </button>
-        <button class="filter-tab" data-filter="all">
-          <i data-lucide="layers"></i> Toda la Obra
-          <span class="badge-count" id="count-all">0</span>
-        </button>
-        <button class="filter-tab" data-filter="pending">
-          <i data-lucide="alert-circle"></i> Pendientes
-          <span class="badge-count" id="count-pending">0</span>
-        </button>
-        <button class="filter-tab" data-filter="reviewing">
-          <i data-lucide="search"></i> En Valoración
-          <span class="badge-count" id="count-reviewing">0</span>
-        </button>
-        <button class="filter-tab" data-filter="selected">
-          <i data-lucide="check-check"></i> Cerrados
-          <span class="badge-count" id="count-selected">0</span>
-        </button>
-      </div>
-
-      <div class="filter-inputs-row">
-        <div class="search-box">
-          <i data-lucide="search" class="search-icon"></i>
-          <input type="text" id="search-input" class="search-input" placeholder="Buscar por material, estancia (baño, fachada...), marca (IKEA, Simon, Malpesa)...">
-        </div>
-
-        <select id="select-chapter" class="select-chapter">
-          <option value="todos">Todos los Capítulos</option>
-          <!-- Rellenado dinámicamente -->
-        </select>
-
-        <select id="select-sort" class="select-sort">
-          <option value="default">Orden por Defecto</option>
-          <option value="price-desc">Precio: Mayor a Menor</option>
-          <option value="price-asc">Precio: Menor a Mayor</option>
-          <option value="name">Alfabético</option>
-          <option value="pending-first">Pendientes Primero</option>
-        </select>
-
-        <button class="btn btn-outline" id="btn-export-csv" title="Descargar Excel / CSV">
-          <i data-lucide="table"></i> CSV
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- =========================================================================
-       CONTENIDO PRINCIPAL: CUADRÍCULA DE TARJETAS
-       ========================================================================= -->
-  <main class="content-section" id="content-section">
-    <div class="materials-grid" id="materials-container">
-      <!-- Se generan dinámicamente desde app.js -->
-    </div>
-  </main>
-
-  <!-- =========================================================================
-       MODO DOSSIER TÉCNICO (APAREJADOR Y CONSTRUCTOR)
-       ========================================================================= -->
-  <section class="dossier-view" id="dossier-view">
+  <section class="dossier-view" id="dossier-view" style="display: none;">
     <div class="dossier-card">
       <div class="dossier-header">
         <div>
@@ -169,15 +266,19 @@
           <p class="dossier-meta">
             <strong>Obra:</strong> Vivienda Unifamiliar · Calle Alcón Nº 9, Valdemorillo (Madrid)<br>
             <strong>Promotores:</strong> Laura & Alejandro<br>
-            <strong>Documento de soporte para:</strong> Aparejador / Dirección de Ejecución y Constructor para valoración de mano de obra y montaje de materiales seleccionados.<br>
+            <strong>Proyecto Básico:</strong> Marta Echave Etchecopar (Julio 2026)<br>
+            <strong>Objetivo:</strong> Valoración de mano de obra y montaje de materiales seleccionados para cierre de presupuesto ajustado.<br>
             <strong>Fecha de emisión:</strong> <span id="dossier-date"></span>
           </p>
         </div>
-        <div class="no-print">
+        <div class="no-print" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
           <button class="btn btn-primary" onclick="window.print()">
-            <i data-lucide="printer"></i> Imprimir / Guardar en PDF
+            <i data-lucide="printer"></i> Imprimir / PDF
           </button>
-          <button class="btn btn-outline" id="btn-close-dossier" style="margin-left: 0.5rem;">
+          <button class="btn btn-outline" onclick="exportToCSV()">
+            <i data-lucide="download"></i> Descargar CSV
+          </button>
+          <button class="btn btn-outline" onclick="switchMainView('materials')">
             Volver a la App
           </button>
         </div>
@@ -199,6 +300,110 @@
       </table>
     </div>
   </section>
+
+  <!-- =========================================================================
+       BARRA DE NAVEGACIÓN INFERIOR PARA MÓVIL (TIPO APP NATIVA)
+       ========================================================================= -->
+  <nav class="mobile-bottom-nav mobile-only">
+    <button class="mobile-tab-btn active" id="mobile-tab-materials" onclick="switchMainView('materials')">
+      <i data-lucide="layers"></i>
+      <span>Calidades</span>
+    </button>
+    <button class="mobile-tab-btn" id="mobile-tab-spaces" onclick="switchMainView('spaces')">
+      <i data-lucide="sparkles"></i>
+      <span>Inspiración</span>
+    </button>
+    <button class="mobile-tab-btn" id="mobile-tab-dossier" onclick="switchMainView('dossier')">
+      <i data-lucide="file-text"></i>
+      <span>Aparejador</span>
+    </button>
+    <button class="mobile-tab-btn" id="mobile-tab-save" onclick="openGitHubModal()">
+      <i data-lucide="cloud"></i>
+      <span>Guardar</span>
+    </button>
+  </nav>
+
+  <!-- =========================================================================
+       MODAL: AÑADIR / EDITAR INSPIRACIÓN DE ESPACIOS
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-inspiration">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modal-insp-title">Añadir Imagen de Inspiración</h3>
+        <button class="modal-close" onclick="closeInspirationModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-insp-id">
+
+        <div class="form-row">
+          <div class="form-group" style="flex: 1.5;">
+            <label>Estancia de la Casa *</label>
+            <select id="insp-space-id" class="form-control">
+              <!-- Rellenado dinámico con las estancias del plano -->
+            </select>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Categoría / Elemento</label>
+            <select id="insp-category" class="form-control">
+              <option value="Iluminación & Techos">Iluminación & Techos</option>
+              <option value="Carpintería & Puertas">Carpintería & Puertas</option>
+              <option value="Mobiliario & Armarios">Mobiliario & Armarios</option>
+              <option value="Pavimentos & Alicatados">Pavimentos & Alicatados</option>
+              <option value="Sanitarios & Grifería">Sanitarios & Grifería</option>
+              <option value="Pintura & Decoración">Pintura & Decoración</option>
+              <option value="Albañilería & Chimenea">Albañilería & Chimenea</option>
+              <option value="Exteriores & Porches">Exteriores & Porches</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Título de la Idea *</label>
+          <input type="text" id="insp-title" class="form-control" placeholder="Ej: Foseado con luz LED indirecta y cortinero oculto">
+        </div>
+
+        <div class="form-group">
+          <label>URL de Imagen o Enlace de Pinterest *</label>
+          <input type="url" id="insp-image-url" class="form-control" placeholder="Pega el enlace de la foto (o de Pinterest)..." oninput="handleImageUrlInput(this.value)">
+          <div class="url-helper-tip">
+            <i data-lucide="info" style="width: 14px; height: 14px; flex-shrink: 0;"></i>
+            <span><strong>Tip para Pinterest:</strong> Puedes pegar el enlace directo de la imagen (.jpg, .png o i.pinimg.com), o pegar el enlace del pin. Abajo verás la previsualización inmediata.</span>
+          </div>
+        </div>
+
+        <!-- Previsualización de la imagen extraída -->
+        <div class="image-preview-box" id="insp-preview-box">
+          <img id="insp-preview-img" src="" alt="Vista previa de imagen" style="display: none;">
+          <div id="insp-preview-placeholder">
+            <i data-lucide="image" style="width: 32px; height: 32px; color: var(--text-light);"></i>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">La vista previa de la foto aparecerá aquí al pegar la URL</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>¿Qué os gusta de este espacio? (Descripción visual)</label>
+          <textarea id="insp-desc" class="form-control" rows="2" placeholder="Ej: Me gusta la combinación de madera de roble natural con paredes en blanco roto y la luz cálida que no deslumbra..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label style="color: var(--accent-hover); display: flex; align-items: center; gap: 0.35rem;">
+            <i data-lucide="hard-hat" style="width: 14px; height: 14px;"></i>
+            <strong>Requisitos constructivos para la obra (A tener en cuenta) *</strong>
+          </label>
+          <textarea id="insp-constructive" class="form-control" rows="3" placeholder="Ej: Pladuristas deben dejar fosa de 15x15 cm para cortinas empotradas. Electricista debe prever punto de luz conmutado a 90 cm y tira LED COB 2700K con transformador registrable..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Enlace de origen (Pinterest / Web / Instagram)</label>
+          <input type="url" id="insp-pinterest-url" class="form-control" placeholder="https://www.pinterest.es/pin/... o web de arquitectura">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeInspirationModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveInspirationModal()">Guardar en Inspiración</button>
+      </div>
+    </div>
+  </div>
 
   <!-- =========================================================================
        MODAL: AÑADIR / EDITAR MATERIAL
@@ -245,8 +450,8 @@
             </select>
           </div>
           <div class="form-group">
-            <label>% Merma / Desperdicio</label>
-            <input type="number" id="mat-wastage" class="form-control" value="0" placeholder="Ej: 10% para azulejos">
+            <label>% Merma / Cortes</label>
+            <input type="number" id="mat-wastage" class="form-control" value="0" placeholder="Ej: 10%">
           </div>
         </div>
 
@@ -258,9 +463,9 @@
           <div class="form-group">
             <label>Estado de Selección</label>
             <select id="mat-status" class="form-control">
-              <option value="pending">Pendiente de elegir</option>
-              <option value="reviewing">En valoración / Comparando</option>
-              <option value="selected">Cerrado / Seleccionado</option>
+              <option value="pending">🟡 Pendiente de elegir</option>
+              <option value="reviewing">🔵 En valoración / Comparando</option>
+              <option value="selected">🟢 Cerrado / Seleccionado</option>
             </select>
           </div>
         </div>
@@ -284,7 +489,7 @@
 
         <div class="form-group">
           <label>Instrucciones de Montaje para el Constructor / Aparejador</label>
-          <textarea id="mat-builder" class="form-control" rows="2" placeholder="Detalles de instalación que la constructora debe valorar (mortero cola, replanteo, fijaciones)..."></textarea>
+          <textarea id="mat-builder" class="form-control" rows="2" placeholder="Detalles de instalación que la constructora debe valorar (mortero cola flexible, replanteo, fijaciones)..."></textarea>
         </div>
       </div>
       <div class="modal-footer">
@@ -355,15 +560,15 @@
         <button class="modal-close" id="btn-close-backup-modal">&times;</button>
       </div>
       <div class="modal-body">
-        <p style="font-size: 0.9rem; color: var(--text-muted);">
-          Todos los cambios que hacéis se guardan automáticamente en vuestro navegador. Desde aquí podéis descargar una copia de seguridad en JSON o restaurar una copia anterior.
+        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5;">
+          Todos los cambios que hacéis en materiales e inspiración se guardan automáticamente en vuestro dispositivo. Desde aquí podéis descargar una copia de seguridad en JSON o restaurar una copia anterior.
         </p>
 
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
-          <button class="btn btn-primary" id="btn-download-json">
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem;">
+          <button class="btn btn-primary btn-sm" id="btn-download-json">
             <i data-lucide="download"></i> Descargar Copia JSON
           </button>
-          <button class="btn btn-outline" id="btn-reset-data">
+          <button class="btn btn-outline btn-sm" id="btn-reset-data">
             <i data-lucide="rotate-ccw"></i> Restaurar Memoria Original
           </button>
         </div>
@@ -382,41 +587,51 @@
   </div>
 
   <!-- =========================================================================
-       MODAL: INFORMACIÓN Y SINCRONIZACIÓN DE GITHUB
+       MODAL: GUARDAR Y SINCRONIZAR DIRECTAMENTE EN GITHUB
        ========================================================================= -->
   <div class="modal-overlay" id="modal-github">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>Publicación en GitHub & Acceso Móvil</h3>
-        <button class="modal-close" id="btn-close-github-modal">&times;</button>
+        <h3>Sincronización en la Nube (GitHub)</h3>
+        <button class="modal-close" onclick="closeGitHubModal()">&times;</button>
       </div>
       <div class="modal-body">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <div style="width: 48px; height: 48px; border-radius: 50%; background: #24292f; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+          <div style="width: 44px; height: 44px; border-radius: 50%; background: #24292f; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem;">
             <i data-lucide="github"></i>
           </div>
           <div>
-            <h4 style="font-size: 1.1rem; font-weight: 700;">Repositorio GitHub Conectado</h4>
-            <p style="font-size: 0.825rem; color: var(--text-muted);">Cuenta: <strong>valdemorillohalcon</strong></p>
+            <h4 style="font-size: 1.05rem; font-weight: 700;">Repositorio en Producción</h4>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">valdemorillohalcon / valdemorillo-calidades</p>
           </div>
         </div>
 
-        <div style="background: var(--bg-card-alt); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-top: 0.5rem;">
-          <label style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">URL Pública de vuestra aplicación:</label>
-          <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
-            <input type="text" id="github-public-url" class="form-control" readonly value="https://valdemorillohalcon.github.io/valdemorillo-calidades/" style="font-weight: 600; color: #2563eb;">
-            <button class="btn btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('github-public-url').value); alert('¡URL copiada al portapapeles!');">
+        <div style="background: var(--bg-card-alt); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.85rem; margin-top: 0.5rem;">
+          <label style="font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">URL Pública de vuestra aplicación:</label>
+          <div style="display: flex; gap: 0.4rem; margin-top: 0.3rem;">
+            <input type="text" id="github-public-url" class="form-control" readonly value="https://valdemorillohalcon.github.io/valdemorillo-calidades/" style="font-weight: 600; color: #2563eb; font-size: 0.825rem;">
+            <button class="btn btn-primary btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('github-public-url').value); alert('¡URL copiada al portapapeles!');">
               Copiar
             </button>
           </div>
         </div>
 
-        <p style="font-size: 0.85rem; color: #475569; line-height: 1.5;">
-          Esta URL podéis abrirla en vuestros teléfonos móviles (iPhone o Android) para llevar todas las fotos, calidades y presupuestos cuando visitéis tiendas de cerámica, IKEA o ferreterías, o para pasárselo a vuestro aparejador y constructor.
-        </p>
+        <!-- Botón para sincronizar directamente desde la web -->
+        <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: var(--radius-md); padding: 1rem; margin-top: 0.75rem;">
+          <h5 style="font-size: 0.9rem; font-weight: 700; color: #166534; display: flex; align-items: center; gap: 0.4rem;">
+            <i data-lucide="cloud-upload" style="width: 16px; height: 16px;"></i> Guardar cambios en GitHub directamente
+          </h5>
+          <p style="font-size: 0.8rem; color: #15803d; margin-top: 0.25rem; line-height: 1.4;">
+            Pulsa este botón para subir todas vuestras selecciones de materiales y fotos de inspiración a GitHub en tiempo real:
+          </p>
+          <button class="btn btn-success" id="btn-sync-github-now" style="width: 100%; margin-top: 0.6rem; justify-content: center;" onclick="syncDataToGitHubCloud()">
+            <i data-lucide="upload-cloud"></i> Subir Ahora a GitHub
+          </button>
+          <div id="github-sync-status" style="font-size: 0.78rem; text-align: center; margin-top: 0.4rem; font-weight: 600;"></div>
+        </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-outline" id="btn-close-github">Cerrar</button>
+        <button class="btn btn-outline" onclick="closeGitHubModal()">Cerrar</button>
       </div>
     </div>
   </div>
@@ -425,7 +640,10 @@
        LIGHTBOX PARA VER FOTOS AMPLIADAS
        ========================================================================= -->
   <div class="lightbox-modal" id="lightbox">
-    <img src="" alt="Foto ampliada" class="lightbox-img" id="lightbox-img">
+    <div style="position: relative; max-width: 90vw; max-height: 85vh;">
+      <img src="" alt="Foto ampliada" class="lightbox-img" id="lightbox-img">
+      <button class="lightbox-close-btn" onclick="document.getElementById('lightbox').classList.remove('open')">&times;</button>
+    </div>
   </div>
 
   <!-- SCRIPTS -->
