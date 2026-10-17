@@ -108,7 +108,7 @@ El error Git reproducido era un problema de historial del repositorio, no del te
 - Prueba entre dos sesiones: un cambio reversible enviado desde una sesión apareció en la otra mediante sondeo; la modificación se restauró en Supabase y ambas cachés quedaron consistentes.
 - Prueba de recarga: se introdujo un valor local obsoleto en la segunda sesión y, al recargar, prevalecieron los datos compartidos del servidor (65/15), reemplazando la caché.
 - Prueba de errores y reintento: un fallo de red simulado se informó como almacenamiento solo local, mantuvo disponible el botón y una escritura posterior volvió a compartir el estado correctamente. Las 5 pruebas de persistencia del tema siguen pasando.
-- Publicación: integrar esta implementación en `main` mediante PR; GitHub Pages despliega automáticamente el código.
+- Publicación: integrada mediante el PR #6; GitHub Pages despliega automáticamente el código al actualizar `main`.
 
 ## Registro de fases
 
@@ -119,4 +119,4 @@ El error Git reproducido era un problema de historial del repositorio, no del te
 | 2026-10-17 | 3 — Modernización UI/UX | Nuevo inicio visual, navegación e iconografía, guardado local sencillo, limpieza de acciones técnicas y verificación responsive | `feat/modern-ui` / [PR #2](https://github.com/valdemorillohalcon/valdemorillo-calidades/pull/2) | Integrada y publicada |
 | 2026-10-17 | 4 — Organización y área del aparejador | Capítulos plegables y búsqueda orientada a resultados, marca de Laura y Alex, documentación técnica, edición/local y recarga fiable de recursos cacheados | `feat/organized-material-browser` | Integrada en `main` mediante PR #3; versionado de recursos para clientes con caché antigua |
 | 2026-10-17 | Revisión del guardado | Aviso visible y estado de confirmación coherente con escritura y recuperación local | `fix/save-confirmation` / [PR #5](https://github.com/valdemorillohalcon/valdemorillo-calidades/pull/5) | Integrada y publicada |
-| 2026-10-17 | Almacenamiento compartido | Sincronización de datos de materiales/estancias a Supabase con RLS y actualización entre sesiones | `feat/shared-cloud-storage` | Implementación lista; publicación por PR a `main` |
+| 2026-10-17 | Almacenamiento compartido | Sincronización de datos de materiales/estancias a Supabase con RLS y actualización entre sesiones | `feat/shared-cloud-storage` / PR #6 | Integrada y publicada |
