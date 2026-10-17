@@ -140,17 +140,24 @@ function saveSpacesLocally() {
 function saveAllData() {
   const materialsSaved = saveMaterialsLocally();
   const spacesSaved = saveSpacesLocally();
+  const allSaved = materialsSaved && spacesSaved;
   const toast = document.getElementById("save-toast");
   const buttons = document.querySelectorAll("[data-save-button]");
 
   buttons.forEach(button => {
-    button.disabled = true;
-    button.innerHTML = '<i data-lucide="check"></i> Guardado';
+    button.disabled = allSaved;
+    button.innerHTML = allSaved
+      ? '<i data-lucide="check"></i> Guardado'
+      : '<i data-lucide="check"></i> Guardar';
   });
 
-  toast.textContent = materialsSaved && spacesSaved
+  toast.textContent = allSaved
     ? "Todo guardado en este dispositivo"
-    : "No se pudo guardar todo. Comprueba el espacio disponible del navegador.";
+    : materialsSaved
+      ? "Materiales guardados; no se pudo guardar la inspiración. Comprueba el espacio disponible del navegador."
+      : spacesSaved
+        ? "Inspiración guardada; no se pudieron guardar los materiales. Comprueba el espacio disponible del navegador."
+        : "No se pudo guardar. Comprueba el espacio disponible del navegador.";
   toast.classList.add("visible");
   if (window.lucide) lucide.createIcons();
 
@@ -162,7 +169,7 @@ function saveAllData() {
       button.innerHTML = '<i data-lucide="check"></i> Guardar';
     });
     if (window.lucide) lucide.createIcons();
-  }, 1800);
+  }, 3000);
 }
 
 // ==========================================================================
