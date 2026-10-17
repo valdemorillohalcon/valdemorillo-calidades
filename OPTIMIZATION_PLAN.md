@@ -38,7 +38,7 @@ No mezclar los cambios de persistencia del tema con la modernización visual.
 
 El error Git reproducido era un problema de historial del repositorio, no del tema ni de un error JavaScript causado por cambiarlo. La Fase 2 añade la preferencia de tema que faltaba; no modifica `data.js` ni invoca la sincronización GitHub.
 
-## Fase 2 — Persistencia segura del tema (implementada; publicación pendiente)
+## Fase 2 — Persistencia segura del tema (integrada en producción)
 
 ### Requisitos y aceptación
 
@@ -60,11 +60,11 @@ El error Git reproducido era un problema de historial del repositorio, no del te
 7. La exportación genera `data.js`; la verificación en navegador confirma nombre/contenido, limpia la credencial antigua de `localStorage` y no hace peticiones a la API de GitHub.
 8. Commits locales: `e94ea85` (diagnóstico), `68eb4a3` (fix y pruebas) y pendiente (publicación segura).
 
-**Estado:** implementación y pruebas completadas localmente. El flujo de publicación se sustituyó por exportación de `data.js` y publicación mediante rama Git + pull request; la aplicación no necesita credenciales de escritura. Se eliminó el secreto del código fuente de esta rama y se limpia la clave antigua del almacenamiento local al abrir la app. La credencial filtrada debe revocarse/rotarse desde GitHub; eso no puede hacerse desde este repositorio. El push falló porque Git no tiene credenciales de publicación configuradas en este entorno; PR pendiente.
+**Estado:** integrada en `main` mediante [PR #1](https://github.com/valdemorillohalcon/valdemorillo-calidades/pull/1). El despliegue de GitHub Pages terminó correctamente. El flujo de publicación se sustituyó por exportación de `data.js` y publicación mediante rama Git + pull request; la aplicación no necesita credenciales de escritura.
 
-## Fase 3 — Modernización UI/UX (implementada y verificada en vanilla)
+## Fase 3 — Modernización UI/UX (integrada en producción)
 
-- Rama `feat/modern-ui`, apilada sobre `fix/theme-save-bug` para conservar la separación de fases.
+- Rama `feat/modern-ui`, apilada sobre `fix/theme-save-bug` para conservar la separación de fases; integrada mediante [PR #2](https://github.com/valdemorillohalcon/valdemorillo-calidades/pull/2).
 - Se renovaron la cabecera, la navegación, el hero de inicio, los indicadores de presupuesto, las tarjetas y la vista de estancias con una identidad cálida y 662 iconos Lucide renderizados.
 - Se simplificó la navegación a Calidades, Inspiración y Obra; el control visible de guardado ahora solo confirma el guardado local automático.
 - Se eliminaron de la interfaz principal el acceso de publicación Git, los controles de respaldo visibles y la antigua sincronización remota. La aplicación no hace escrituras remotas ni ofrece un botón que aparente hacerlo.
@@ -77,10 +77,20 @@ El error Git reproducido era un problema de historial del repositorio, no del te
 - Contraste comprobado en los colores base de texto, fondos y botón principal; los estados de vista vacía existentes se mantienen. El informe conserva mediciones, costes y notas de montaje e imprime/exporta CSV.
 - No se ofrece autenticación ficticia con nombres compartidos. El guardado es local y no publica ni sincroniza datos entre dispositivos.
 
+## Fase 4 — Organización de partidas y acceso del aparejador
+
+- Las partidas se presentan agrupadas por capítulo plegable, con número de elementos, estados y decisiones de Laura y Alex; se abre como máximo un capítulo a la vez y solo se renderizan sus tarjetas.
+- La búsqueda abre una sección única con los resultados visibles, y el selector de capítulo expande directamente el grupo correspondiente.
+- El encabezado de marca y el favicon usan un monograma de casa `L·A`; la navegación profesional se identifica como «Aparejador» y su vista como «Documentación para el aparejador».
+- La documentación explica el acceso de edición y ofrece «Editar partidas» para volver a las fichas, donde se pueden actualizar calidades, mediciones, precios, estados, notas y referencias.
+- Límite de producto: la página estática no dispone de cuentas o permisos diferenciados. Cualquier visitante puede editar datos en su navegador, pero estos cambios se guardan localmente y no se sincronizan con los dispositivos de otros colaboradores. La app lo comunica sin prometer permisos que no existen.
+- Verificación en navegador: 14 capítulos / 65 partidas en la vista «Todo», un solo capítulo abierto a la vez, búsqueda que mostró 7 resultados, selector de capítulo que expande directamente su grupo y documentación con 65 filas. A 320 px no hay desbordamiento horizontal.
+
 ## Registro de fases
 
 | Fecha | Fase | Resultado | Rama / PR | Estado |
 |---|---|---|---|---|
 | 2026-10-17 | 1 — Diagnóstico | Tema inexistente; error de Git por historiales sin ancestro común; documentados riesgos independientes de almacenamiento y sincronización web | `main` | Completada |
-| 2026-10-17 | 2 — Tema y publicación segura | Preferencia segura, exportación de datos para rama/PR y 5 pruebas de navegador; se eliminó el secreto del cliente y se limpia la clave local antigua | `fix/theme-save-bug` | Implementada localmente; rotación de credencial y autenticación Git para PR pendientes |
-| 2026-10-17 | 3 — Modernización UI/UX | Nuevo inicio visual, navegación e iconografía, guardado local sencillo, limpieza de acciones técnicas y verificación en 15 combinaciones de pantalla/vista | `feat/modern-ui` | Implementada y validada localmente; push/PR pendientes de autenticación Git |
+| 2026-10-17 | 2 — Tema y publicación segura | Preferencia segura, exportación de datos para rama/PR y 5 pruebas de navegador; se eliminó la escritura GitHub desde el cliente | `fix/theme-save-bug` / [PR #1](https://github.com/valdemorillohalcon/valdemorillo-calidades/pull/1) | Integrada y publicada |
+| 2026-10-17 | 3 — Modernización UI/UX | Nuevo inicio visual, navegación e iconografía, guardado local sencillo, limpieza de acciones técnicas y verificación responsive | `feat/modern-ui` / [PR #2](https://github.com/valdemorillohalcon/valdemorillo-calidades/pull/2) | Integrada y publicada |
+| 2026-10-17 | 4 — Organización y área del aparejador | Capítulos plegables y búsqueda orientada a resultados, marca de Laura y Alex, documentación técnica y explicación de edición/localidad | `feat/organized-material-browser` | Implementada y validada localmente; pendiente de publicación |

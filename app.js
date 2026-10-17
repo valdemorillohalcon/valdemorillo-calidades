@@ -1,6 +1,6 @@
 // ==========================================================================
 // APLICACIÓN DE CONTROL DE MATERIALES, CALIDADES E INSPIRACIÓN DE ESPACIOS
-// CALLE ALCÓN N.º 9 · VALDEMORILLO (Laura & Alejandro)
+// CALLE ALCÓN N.º 9 · VALDEMORILLO (Laura & Alex)
 // ==========================================================================
 
 const STORAGE_KEY_MATERIALS = "valdemorillo_materials_v1";
@@ -50,6 +50,7 @@ let state = {
   currentSpaceCategoryFilter: "todas", // Filtro por categoría específica de la estancia
   currentFilter: "criteria", // 'criteria' por defecto para destacar lo que requiere decisión
   currentChapter: "todos",
+  expandedChapter: null,
   searchQuery: "",
   currentSort: "default",
   kpisCollapsedMobile: false
@@ -788,6 +789,23 @@ function renderMaterialsList() {
     return 0;
   });
 
+  const chapterSummary = document.getElementById("chapter-browser-total");
+  const chapterTitle = document.getElementById("chapter-browser-title");
+  const chapterDescription = document.getElementById("chapter-browser-description");
+  const chapterCount = new Set(filtered.map(mat => mat.chapter)).size;
+  if (chapterSummary) {
+    chapterSummary.textContent = state.searchQuery.trim()
+      ? `${filtered.length} ${filtered.length === 1 ? "resultado" : "resultados"}`
+      : `${chapterCount} ${chapterCount === 1 ? "capítulo" : "capítulos"} · ${filtered.length} partidas`;
+  }
+  if (chapterTitle && chapterDescription) {
+    const searching = state.searchQuery.trim().length > 0;
+    chapterTitle.textContent = searching ? "Resultados de búsqueda" : "Explora por capítulos";
+    chapterDescription.textContent = searching
+      ? `${filtered.length} ${filtered.length === 1 ? "partida encontrada" : "partidas encontradas"} en ${chapterCount} ${chapterCount === 1 ? "capítulo" : "capítulos"}.`
+      : "Abre solo el grupo que necesitas. Cada capítulo muestra sus decisiones y partidas pendientes.";
+  }
+
   if (filtered.length === 0) {
     container.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
@@ -801,14 +819,113 @@ function renderMaterialsList() {
     return;
   }
 
-  filtered.forEach(mat => {
-    const card = createMaterialCard(mat);
-    container.appendChild(card);
-  });
+  if (state.searchQuery.trim()) {
+    renderMaterialGroup(container, {
+      chapterId: "search-results",
+      title: "Resultados de búsqueda",
+      materials: filtered,
+      expanded: true,
+      isSearch: true
+    });
+  } else {
+    const chapterIds = [...new Set([
+      ...CHAPTERS.filter(chapter => chapter.id !== "todos").map(chapter => chapter.id),
+      ...state.materials.map(material => material.chapter).filter(Boolean)
+    ])];
+
+    chapterIds.forEach(chapterId => {
+      const chapterMaterials = filtered.filter(material => material.chapter === chapterId);
+      if (!chapterMaterials.length) return;
+
+      const chapter = CHAPTERS.find(item => item.id === chapterId);
+      const allChapterMaterials = state.materials.filter(material => material.chapter === chapterId);
+      renderMaterialGroup(container, {
+        chapterId,
+        title: chapter?.name || allChapterMaterials[0]?.chapterName || chapterId,
+        icon: chapter?.icon || "layers",
+        materials: chapterMaterials,
+        allMaterials: allChapterMaterials,
+        expanded: state.expandedChapter === chapterId
+      });
+    });
+  }
 
   if (window.lucide) {
     lucide.createIcons();
   }
+}
+
+function renderMaterialGroup(container, { chapterId, title, icon = "search", materials, allMaterials = materials, expanded, isSearch = false }) {
+  const group = document.createElement("section");
+  group.className = `chapter-group${expanded ? " is-expanded" : ""}${isSearch ? " search-results-group" : ""}`;
+
+  const toggle = document.createElement("button");
+  toggle.className = "chapter-group-toggle";
+  toggle.type = "button";
+  toggle.setAttribute("aria-expanded", String(expanded));
+  toggle.setAttribute("aria-controls", `chapter-panel-${chapterId}`);
+
+  const iconEl = document.createElement("i");
+  iconEl.dataset.lucide = icon;
+  iconEl.setAttribute("aria-hidden", "true");
+
+  const titleEl = document.createElement("span");
+  titleEl.className = "chapter-group-title";
+  titleEl.textContent = title;
+
+  const countEl = document.createElement("span");
+  countEl.className = "chapter-group-count";
+  countEl.textContent = isSearch
+    ? `${materials.length} ${materials.length === 1 ? "partida" : "partidas"}`
+    : materials.length === allMaterials.length
+      ? `${allMaterials.length} ${allMaterials.length === 1 ? "partida" : "partidas"}`
+      : `${materials.length} de ${allMaterials.length} visibles`;
+
+  const titleBlock = document.createElement("span");
+  titleBlock.className = "chapter-group-title-block";
+  titleBlock.append(titleEl, countEl);
+
+  const details = document.createElement("span");
+  details.className = "chapter-group-details";
+  if (!isSearch) {
+    const pending = allMaterials.filter(material => material.status === "pending").length;
+    const reviewing = allMaterials.filter(material => material.status === "reviewing").length;
+    const selected = allMaterials.filter(material => material.status === "selected").length;
+    const decisions = allMaterials.filter(material => material.needsOwnerCriteria).length;
+    details.textContent = `${pending} por elegir · ${reviewing} en valoración · ${selected} elegidas · ${decisions} ${decisions === 1 ? "decisión" : "decisiones"} de Laura y Alex`;
+  }
+
+  const chevron = document.createElement("i");
+  chevron.dataset.lucide = "chevron-down";
+  chevron.className = "chapter-group-chevron";
+  chevron.setAttribute("aria-hidden", "true");
+
+  toggle.append(iconEl, titleBlock);
+  if (!isSearch) toggle.append(details);
+  toggle.append(chevron);
+
+  const panel = document.createElement("div");
+  panel.className = "materials-grid chapter-materials-grid";
+  panel.id = `chapter-panel-${chapterId}`;
+  panel.hidden = !expanded;
+  if (expanded) {
+    materials.forEach(material => panel.appendChild(createMaterialCard(material)));
+  }
+
+  toggle.addEventListener("click", () => {
+    if (isSearch) {
+      panel.hidden = !panel.hidden;
+      toggle.setAttribute("aria-expanded", String(!panel.hidden));
+      group.classList.toggle("is-expanded", !panel.hidden);
+      if (window.lucide) lucide.createIcons();
+      return;
+    }
+    state.expandedChapter = expanded ? null : chapterId;
+    renderMaterialsList();
+  });
+
+  group.append(toggle, panel);
+  container.appendChild(group);
 }
 
 function createMaterialCard(mat) {
@@ -833,9 +950,9 @@ function createMaterialCard(mat) {
         </span>
 
         ${mat.needsOwnerCriteria ? `
-          <span class="criteria-pill" title="Requiere selección por parte de Laura y Alejandro">
+          <span class="criteria-pill" title="Requiere selección por parte de Laura y Alex">
             <i data-lucide="sparkles" style="width: 11px; height: 11px;"></i>
-            Criterio Laura & Alejandro
+            Criterio Laura & Alex
           </span>
         ` : ''}
 
@@ -980,11 +1097,11 @@ function createMaterialCard(mat) {
         </div>
       </div>
 
-      <!-- Cuaderno de notas y comentarios conjuntos (Laura & Alejandro) -->
+      <!-- Cuaderno de notas y comentarios conjuntos (Laura & Alex) -->
       <div class="comments-box">
         <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.3rem;">
           <i data-lucide="message-square" style="width: 11px; height: 11px;"></i>
-          Notas conjuntas (Laura & Alejandro)
+          Notas conjuntas (Laura & Alex)
         </div>
 
         <div id="comments-list-${mat.id}">
@@ -1197,6 +1314,7 @@ function deleteMaterial(id) {
 function resetFilters() {
   state.currentFilter = "criteria";
   state.currentChapter = "todos";
+  state.expandedChapter = null;
   state.searchQuery = "";
   state.currentSort = "default";
   document.getElementById("search-input").value = "";
@@ -1516,6 +1634,7 @@ function setupEventListeners() {
   // Desplegable de capítulos
   document.getElementById("select-chapter")?.addEventListener("change", (e) => {
     state.currentChapter = e.target.value;
+    state.expandedChapter = state.currentChapter === "todos" ? null : state.currentChapter;
     renderMaterialsList();
   });
 
