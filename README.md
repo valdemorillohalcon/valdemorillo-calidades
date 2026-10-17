@@ -1,6 +1,6 @@
-# Control de Materiales, Calidades & Inspiración de Espacios · Calle Alcón 9, Valdemorillo
+# Casa Laura & Alex · Control de materiales y obra · Alcón 9
 
-Aplicación web desarrollada a medida para **Laura y Alejandro** para la gestión integral, comparativa de calidades, selección de acabados, inspiración visual de estancias y cierre de presupuesto de la vivienda unifamiliar en **Calle Alcón Nº 9, Valdemorillo (Madrid)**.
+Aplicación web desarrollada a medida para **Laura y Alex** para la gestión integral, comparativa de calidades, selección de acabados, inspiración visual de estancias y cierre de presupuesto de la vivienda unifamiliar en **Calle Alcón Nº 9, Valdemorillo (Madrid)**.
 
 ---
 
@@ -33,17 +33,19 @@ Estructurada a partir del **Plano 03 (Distribución y Superficies de Planta Baja
 ---
 
 ### 2. 🏷️ Control de Materiales, Mediciones y Presupuesto
-- **Criterio Laura & Alejandro:** Filtro dedicado para los elementos que requieren decisión de los propietarios.
+- **Criterio Laura & Alex:** Filtro dedicado para los elementos que requieren decisión de los propietarios.
+- Las partidas se organizan por capítulos de obra plegables, con contadores de estado y decisiones pendientes; la búsqueda muestra sus resultados directamente.
 - **Calculadora en vivo:** Multiplicador por $m^2$, $ml$, $ud$ o $pa$ con porcentaje de merma (+10% en cerámicas, +5% en rodapiés).
 - **Comparador de Opciones:** Permite guardar referencias de IKEA, Porcelanosa, Leroy Merlin, Simon, Roca, etc., con fotos, precios y enlaces directos a tiendas.
-- **Cuaderno de notas conjuntas:** Registro de comentarios entre Laura y Alejandro.
+- **Cuaderno de notas conjuntas:** Registro de comentarios entre Laura y Alex.
 
 ---
 
-### 3. 👷‍♂️ Modo Dossier para el Aparejador y Constructor
+### 3. 👷‍♂️ Documentación para el aparejador
 - Formato de tabla técnica imprimible en PDF con salto de página limpio (A4).
 - Exportación instantánea a **Excel / CSV**.
 - Resumen consolidado con mediciones y requisitos de montaje exactos para que la constructora presupueste la mano de obra.
+- El botón **Editar partidas** lleva a las fichas, donde se pueden cambiar materiales, mediciones, precios, estados, notas, referencias e imágenes.
 
 ---
 
@@ -58,6 +60,7 @@ Estructurada a partir del **Plano 03 (Distribución y Superficies de Planta Baja
 ### 5. ☁️ Sincronización en la Nube (GitHub Pages)
 - Guardado automático en el navegador (`localStorage`) y confirmación sencilla con el botón «Guardar».
 - El guardado desde la aplicación es local al dispositivo; los datos no se envían a GitHub. Los cambios del código se publican por separado mediante Git, nunca con credenciales embebidas en el navegador.
+- No hay cuentas ni permisos por usuario: cualquier visitante puede editar los datos en su navegador y esos cambios no se sincronizan automáticamente con el aparejador ni con otros dispositivos.
 
 ---
 

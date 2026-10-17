@@ -1,6 +1,6 @@
 /* ==========================================================================
    ESTILOS GENERALES & ARQUITECTÓNICOS · CALLE ALCÓN 9, VALDEMORILLO
-   Laura & Alejandro · Control de Materiales, Calidades e Inspiración
+   Laura & Alex · Control de Materiales, Calidades e Inspiración
    ========================================================================== */
 
 :root {
@@ -2014,10 +2014,31 @@ body {
 .brand-icon {
   width: 44px;
   height: 44px;
-  color: #fff;
-  background: linear-gradient(145deg, #ed9b68, #d75f48);
-  border-radius: 15px;
-  box-shadow: 0 6px 16px rgba(215, 95, 72, 0.24);
+  color: #fff7ed;
+  background: linear-gradient(145deg, #315f57, #183e39);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 15px 15px 15px 5px;
+  box-shadow: 0 6px 16px rgba(24, 62, 57, 0.22);
+  overflow: hidden;
+}
+
+.brand-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.brand-icon text {
+  fill: currentColor;
+  stroke: none;
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
 }
 
 .header-titles h1 {
@@ -2420,6 +2441,186 @@ a:focus-visible {
   gap: 1rem;
 }
 
+#materials-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.chapter-browser-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.chapter-browser-heading h2 {
+  margin: 0;
+  color: var(--text-main);
+  font-size: clamp(1.05rem, 2vw, 1.3rem);
+  letter-spacing: -0.03em;
+}
+
+.chapter-browser-heading p:last-child {
+  margin: 0.25rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.chapter-browser-eyebrow {
+  margin: 0 0 0.2rem;
+  color: var(--accent-text);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+}
+
+.chapter-browser-total {
+  flex: 0 0 auto;
+  padding: 0.4rem 0.7rem;
+  border-radius: 99px;
+  background: var(--bg-card-alt);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.chapter-group {
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.chapter-group-toggle {
+  width: 100%;
+  min-height: 68px;
+  display: grid;
+  grid-template-columns: 38px minmax(170px, 1fr) minmax(180px, auto) 20px;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-main);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.chapter-group-toggle:hover,
+.chapter-group-toggle:focus-visible {
+  background: var(--bg-card-alt);
+}
+
+.chapter-group-toggle:focus-visible {
+  outline: 3px solid var(--border-focus);
+  outline-offset: -3px;
+}
+
+.chapter-group-toggle > :first-child {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  padding: 9px;
+  border-radius: 12px;
+  background: var(--bg-card-alt);
+  color: var(--primary);
+}
+
+.chapter-group-title-block {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.chapter-group-title {
+  font-size: 0.88rem;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.chapter-group-count {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+}
+
+.chapter-group-details {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  text-align: right;
+}
+
+.chapter-group-chevron {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  transition: transform 160ms ease;
+}
+
+.chapter-group.is-expanded .chapter-group-chevron {
+  transform: rotate(180deg);
+}
+
+.chapter-materials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+  gap: 1rem;
+  padding: 0 0.85rem 0.85rem;
+}
+
+.chapter-materials-grid[hidden] {
+  display: none;
+}
+
+.chapter-group.is-expanded .chapter-group-toggle {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.search-results-group .chapter-group-toggle {
+  grid-template-columns: 38px minmax(0, 1fr) 20px;
+}
+
+.dossier-intro {
+  margin: 0.4rem 0 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+}
+
+.dossier-editing-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  background: var(--bg-card-alt);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.dossier-editing-note > svg {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin-top: 0.08rem;
+  color: var(--primary);
+}
+
+.dossier-editing-note p {
+  margin: 0;
+}
+
+.dossier-editing-note strong {
+  color: var(--text-main);
+}
+
 .material-card {
   border: 1px solid var(--border-color);
   border-radius: 20px;
@@ -2733,6 +2934,69 @@ a:focus-visible {
     gap: 0.7rem;
   }
 
+  #materials-container {
+    gap: 0.55rem;
+  }
+
+  .chapter-browser-heading {
+    align-items: flex-start;
+    margin-bottom: 0.65rem;
+  }
+
+  .chapter-browser-heading p:last-child {
+    max-width: 34ch;
+    font-size: 0.72rem;
+  }
+
+  .chapter-browser-total {
+    padding: 0.35rem 0.55rem;
+    font-size: 0.64rem;
+  }
+
+  .chapter-group-toggle {
+    min-height: 63px;
+    grid-template-columns: 34px minmax(0, 1fr) 18px;
+    gap: 0.6rem;
+    padding: 0.7rem;
+  }
+
+  .chapter-group-toggle > :first-child {
+    width: 34px;
+    height: 34px;
+    padding: 8px;
+  }
+
+  .chapter-group-title {
+    font-size: 0.78rem;
+  }
+
+  .chapter-group-count {
+    font-size: 0.64rem;
+  }
+
+  .chapter-group-details {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: -0.45rem;
+    text-align: left;
+    font-size: 0.6rem;
+    line-height: 1.35;
+  }
+
+  .chapter-group-chevron {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .search-results-group .chapter-group-toggle {
+    grid-template-columns: 34px minmax(0, 1fr) 18px;
+  }
+
+  .chapter-materials-grid {
+    gap: 0.7rem;
+    padding: 0 0.55rem 0.55rem;
+  }
+
   .material-card:hover {
     transform: none;
   }
@@ -2785,6 +3049,15 @@ a:focus-visible {
 }
 
 @media (max-width: 420px) {
+  .chapter-browser-heading {
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .chapter-browser-total {
+    align-self: flex-start;
+  }
+
   .welcome-hero {
     grid-template-columns: minmax(0, 1fr) 100px;
     gap: 0;
