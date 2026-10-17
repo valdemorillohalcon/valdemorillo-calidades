@@ -60,23 +60,23 @@ El error Git reproducido era un problema de historial del repositorio, no del te
 7. La exportación genera `data.js`; la verificación en navegador confirma nombre/contenido, limpia la credencial antigua de `localStorage` y no hace peticiones a la API de GitHub.
 8. Commits locales: `e94ea85` (diagnóstico), `68eb4a3` (fix y pruebas) y pendiente (publicación segura).
 
-**Estado:** implementación y pruebas completadas localmente. El flujo de publicación se sustituyó por exportación de `data.js` y publicación mediante rama Git + pull request; la aplicación no necesita credenciales de escritura. Se eliminó el secreto del código fuente de esta rama y se limpia la clave antigua del almacenamiento local al abrir la app. La credencial filtrada debe revocarse/rotarse desde GitHub; eso no puede hacerse desde este repositorio. PR pendiente.
+**Estado:** implementación y pruebas completadas localmente. El flujo de publicación se sustituyó por exportación de `data.js` y publicación mediante rama Git + pull request; la aplicación no necesita credenciales de escritura. Se eliminó el secreto del código fuente de esta rama y se limpia la clave antigua del almacenamiento local al abrir la app. La credencial filtrada debe revocarse/rotarse desde GitHub; eso no puede hacerse desde este repositorio. El push falló porque Git no tiene credenciales de publicación configuradas en este entorno; PR pendiente.
 
-## Fase 3 — Modernización UI/UX (iniciada; arquitectura por confirmar)
+## Fase 3 — Modernización UI/UX (iniciada; esperando decisión arquitectónica)
 
-- Rama prevista: `feat/modern-ui`, independiente del PR de tema/publicación.
+- Rama local creada: `feat/modern-ui`, basada en `fix/theme-save-bug` para mantener los PR separados y apilados.
 - La aplicación actual es HTML/CSS/JavaScript vanilla, sin `package.json`, framework ni entorno Node disponible en esta máquina.
 - shadcn/ui y Radix UI requieren una aplicación basada en React (o una migración equivalente); no se pueden incorporar coherentemente como componentes accesibles en el HTML vanilla existente. Tailwind requerirá asimismo un proceso de compilación para producción.
-- Antes de migrar la aplicación completa, confirmar si se aprueba adoptar React + Vite y el tooling asociado; la migración afecta la arquitectura, la carga de datos y la app completa, no solo los estilos.
+- Se consultó si se aprueba migrar la aplicación completa a React + Vite; no se recibió una elección explícita, por lo que aún no se ha iniciado código visual ni tooling.
 - Mantener contraste WCAG AA, navegación accesible por teclado y diseño responsive.
 - Incluir estados de carga, error y vacío.
 - Mantener esta fase en un pull request separado, sin mezclarla con el fix de tema.
-- No se han iniciado cambios visuales ni añadido dependencias mientras se confirma la arquitectura.
+- Instalar Node/npm y dependencias únicamente después de confirmar la estrategia.
 
 ## Registro de fases
 
 | Fecha | Fase | Resultado | Rama / PR | Estado |
 |---|---|---|---|---|
 | 2026-10-17 | 1 — Diagnóstico | Tema inexistente; error de Git por historiales sin ancestro común; documentados riesgos independientes de almacenamiento y sincronización web | `main` | Completada |
-| 2026-10-17 | 2 — Tema y publicación segura | Preferencia segura, exportación de datos para rama/PR y 5 pruebas de navegador; se eliminó el secreto del cliente y se limpia la clave local antigua | `fix/theme-save-bug` | Implementada localmente; rotación de credencial y PR pendientes |
-| 2026-10-17 | 3 — Modernización UI/UX | Inicio y evaluación del alcance; falta confirmar la migración de vanilla a React + Vite requerida por las bibliotecas solicitadas | `feat/modern-ui` | En pausa antes de modificar UI/tooling |
+| 2026-10-17 | 2 — Tema y publicación segura | Preferencia segura, exportación de datos para rama/PR y 5 pruebas de navegador; se eliminó el secreto del cliente y se limpia la clave local antigua | `fix/theme-save-bug` | Implementada localmente; rotación de credencial y autenticación Git para PR pendientes |
+| 2026-10-17 | 3 — Modernización UI/UX | Rama iniciada; estrategia React + Vite frente a vanilla/Tailwind pendiente de elección explícita | `feat/modern-ui` | En espera antes de cambios de UI o dependencias |
