@@ -5,12 +5,23 @@
 
 const STORAGE_KEY_MATERIALS = "valdemorillo_materials_v1";
 const STORAGE_KEY_SPACES = "valdemorillo_spaces_v1";
+const SHARED_STATE_TABLE = "shared_app_state";
+const SHARED_STATE_POLL_INTERVAL = 15000;
+
+let sharedSyncReady = false;
+let sharedLastUpdatedAt = null;
+let sharedPollTimer = null;
+let sharedWriteTimer = null;
+let sharedWriteQueue = Promise.resolve();
+let sharedWriteWaiters = [];
+let sharedWriteInFlight = false;
+const sharedDirtyFields = new Set();
 
 function reportLocalStorageFailure(error, operation) {
   console.error(`No se pudo ${operation} datos del almacenamiento local.`, error);
   const status = document.getElementById("local-storage-status");
   if (status) {
-    status.textContent = "El almacenamiento local no está disponible; algunos cambios solo durarán mientras esta página esté abierta.";
+    status.textContent = "El almacenamiento local no está disponible; recuperar los cambios tras recargar dependerá de la conexión compartida.";
   }
 }
 
@@ -59,10 +70,12 @@ let state = {
 // ==========================================================================
 // INICIALIZACIÓN
 // ==========================================================================
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   clearLegacyGitHubToken();
   setupThemeControls();
   loadData();
+  setSharedStorageStatus("Conectando con el almacén compartido…");
+  await initializeSharedStorage();
   setupEventListeners();
   populateChapterSelects();
   populateSpaceSelectModal();
@@ -71,6 +84,194 @@ document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
   }
 });
+
+function setSharedStorageStatus(message) {
+  const status = document.getElementById("shared-storage-status");
+  if (status) status.textContent = message;
+}
+
+function getSharedStateEndpoint(query = "") {
+  const config = window.APP_SUPABASE_CONFIG;
+  if (!config?.url || !config?.publishableKey) {
+    throw new Error("Falta la configuración pública de Supabase.");
+  }
+  return `${config.url.replace(/\/$/, "")}/rest/v1/${SHARED_STATE_TABLE}${query}`;
+}
+
+async function requestSharedState(query = "", options = {}) {
+  const config = window.APP_SUPABASE_CONFIG;
+  const response = await fetch(getSharedStateEndpoint(query), {
+    ...options,
+    headers: {
+      apikey: config.publishableKey,
+      Authorization: `Bearer ${config.publishableKey}`,
+      Accept: "application/json",
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...options.headers
+    },
+    signal: AbortSignal.timeout(10000)
+  });
+
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`Supabase ${response.status}: ${detail}`);
+  }
+
+  if (response.status === 204) return null;
+  const responseText = await response.text();
+  return responseText ? JSON.parse(responseText) : null;
+}
+
+async function readSharedState() {
+  const rows = await requestSharedState("?id=eq.1&select=id,materials,spaces,updated_at");
+  const record = Array.isArray(rows) ? rows[0] : null;
+  if (record && (!Array.isArray(record.materials) || !Array.isArray(record.spaces))) {
+    throw new Error("El registro compartido tiene un formato de datos no válido.");
+  }
+  return record || null;
+}
+
+function cacheSharedState(record) {
+  state.materials = record.materials;
+  state.spaces = record.spaces;
+  sharedLastUpdatedAt = record.updated_at;
+  writeLocalStorage(STORAGE_KEY_MATERIALS, JSON.stringify(state.materials));
+  writeLocalStorage(STORAGE_KEY_SPACES, JSON.stringify(state.spaces));
+  writeLocalStorage("valdemorillo_spaces_version", "v2_room_cats");
+}
+
+async function createSharedStateIfMissing() {
+  const initialRecord = {
+    id: 1,
+    materials: state.materials,
+    spaces: state.spaces
+  };
+  await requestSharedState("?on_conflict=id", {
+    method: "POST",
+    headers: { Prefer: "resolution=ignore-duplicates,return=minimal" },
+    body: JSON.stringify(initialRecord)
+  });
+  return readSharedState();
+}
+
+async function initializeSharedStorage() {
+  try {
+    let record = await readSharedState();
+    if (!record) record = await createSharedStateIfMissing();
+    if (!record) throw new Error("Supabase no devolvió el registro compartido.");
+
+    cacheSharedState(record);
+    sharedSyncReady = true;
+    setSharedStorageStatus("Datos compartidos: los cambios se guardan para todos los dispositivos.");
+    startSharedStatePolling();
+    return true;
+  } catch (error) {
+    sharedSyncReady = false;
+    console.error("No se pudo conectar con el almacén compartido.", error);
+    setSharedStorageStatus("Sin conexión al almacén compartido. Los cambios de este dispositivo no se verán en otros.");
+    return false;
+  }
+}
+
+function startSharedStatePolling() {
+  window.clearInterval(sharedPollTimer);
+  sharedPollTimer = window.setInterval(refreshSharedState, SHARED_STATE_POLL_INTERVAL);
+}
+
+async function refreshSharedState() {
+  if (!sharedSyncReady || sharedWriteWaiters.length || sharedWriteInFlight) return;
+  if (sharedDirtyFields.size) {
+    scheduleSharedSave();
+    return;
+  }
+  try {
+    const record = await readSharedState();
+    if (record && record.updated_at !== sharedLastUpdatedAt) {
+      cacheSharedState(record);
+      renderApp();
+      setSharedStorageStatus("Datos actualizados desde otro dispositivo.");
+    }
+  } catch (error) {
+    console.error("No se pudieron actualizar los datos compartidos.", error);
+    setSharedStorageStatus("No se pudo actualizar desde el almacén compartido. Comprueba tu conexión.");
+  }
+}
+
+function runSharedWriteBatch() {
+  window.clearTimeout(sharedWriteTimer);
+  sharedWriteTimer = null;
+  const waiters = sharedWriteWaiters.splice(0);
+  const fields = [...sharedDirtyFields];
+  sharedDirtyFields.clear();
+  if (!waiters.length && !fields.length) return sharedWriteQueue;
+
+  const write = sharedWriteQueue.then(async () => {
+    sharedWriteInFlight = true;
+    const payload = Object.fromEntries(fields.map(field => [field, state[field]]));
+    await requestSharedState("?id=eq.1", {
+      method: "PATCH",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify(payload)
+    });
+    const record = await readSharedState();
+    if (!record) throw new Error("No se encontró el registro después de guardar.");
+    sharedLastUpdatedAt = record.updated_at;
+    setSharedStorageStatus("Guardado y compartido con los demás dispositivos.");
+    return true;
+  }).catch(error => {
+    fields.forEach(field => sharedDirtyFields.add(field));
+    console.error("No se pudieron guardar los cambios compartidos.", error);
+    setSharedStorageStatus("No se pudieron compartir los cambios. Siguen guardados solo en este dispositivo.");
+    return false;
+  }).finally(() => {
+    sharedWriteInFlight = false;
+  });
+
+  sharedWriteQueue = write.then(() => undefined);
+  write.then(result => waiters.forEach(resolve => resolve(result)));
+  return write;
+}
+
+function scheduleSharedSave(field) {
+  if (field) sharedDirtyFields.add(field);
+  if (!sharedSyncReady) return Promise.resolve(false);
+  setSharedStorageStatus("Guardando cambios para todos los dispositivos…");
+  const result = new Promise(resolve => sharedWriteWaiters.push(resolve));
+  window.clearTimeout(sharedWriteTimer);
+  sharedWriteTimer = window.setTimeout(runSharedWriteBatch, 350);
+  return result;
+}
+
+function flushSharedSave() {
+  if (sharedWriteTimer) return runSharedWriteBatch();
+  if (sharedWriteWaiters.length) return runSharedWriteBatch();
+  return sharedWriteQueue.then(() => sharedSyncReady);
+}
+
+async function publishLocalStateToShared() {
+  try {
+    await requestSharedState("?on_conflict=id", {
+      method: "POST",
+      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify({
+        id: 1,
+        materials: state.materials,
+        spaces: state.spaces
+      })
+    });
+    const record = await readSharedState();
+    if (!record) throw new Error("No se encontró el registro después de guardar.");
+    cacheSharedState(record);
+    sharedSyncReady = true;
+    startSharedStatePolling();
+    setSharedStorageStatus("Guardado y compartido con los demás dispositivos.");
+    return true;
+  } catch (error) {
+    console.error("No se pudieron reintentar los cambios compartidos.", error);
+    setSharedStorageStatus("No se pudieron compartir los cambios. Siguen guardados solo en este dispositivo.");
+    return false;
+  }
+}
 
 function setupThemeControls() {
   const controls = document.querySelectorAll("[data-theme-select]");
@@ -130,19 +331,33 @@ function loadData() {
 function saveMaterialsLocally() {
   const saved = writeLocalStorage(STORAGE_KEY_MATERIALS, JSON.stringify(state.materials));
   updateKPIs();
+  saveMaterialsLocally.sharedWrite = scheduleSharedSave("materials");
   return saved;
 }
 
 function saveSpacesLocally() {
-  return writeLocalStorage(STORAGE_KEY_SPACES, JSON.stringify(state.spaces));
+  const saved = writeLocalStorage(STORAGE_KEY_SPACES, JSON.stringify(state.spaces));
+  saveSpacesLocally.sharedWrite = scheduleSharedSave("spaces");
+  return saved;
 }
 
-function saveAllData() {
-  const materialsSaved = saveMaterialsLocally();
-  const spacesSaved = saveSpacesLocally();
-  const allSaved = materialsSaved && spacesSaved;
+async function saveAllData() {
   const toast = document.getElementById("save-toast");
   const buttons = document.querySelectorAll("[data-save-button]");
+  buttons.forEach(button => {
+    button.disabled = true;
+    button.innerHTML = '<i data-lucide="loader-circle"></i> Guardando…';
+  });
+  toast.textContent = "Guardando cambios compartidos…";
+  toast.classList.add("visible");
+  if (window.lucide) lucide.createIcons();
+
+  const materialsSaved = saveMaterialsLocally();
+  const spacesSaved = saveSpacesLocally();
+  let sharedSaved = sharedSyncReady
+    ? await flushSharedSave()
+    : await publishLocalStateToShared();
+  const allSaved = sharedSaved;
 
   buttons.forEach(button => {
     button.disabled = allSaved;
@@ -152,12 +367,10 @@ function saveAllData() {
   });
 
   toast.textContent = allSaved
-    ? "Todo guardado en este dispositivo"
-    : materialsSaved
-      ? "Materiales guardados; no se pudo guardar la inspiración. Comprueba el espacio disponible del navegador."
-      : spacesSaved
-        ? "Inspiración guardada; no se pudieron guardar los materiales. Comprueba el espacio disponible del navegador."
-        : "No se pudo guardar. Comprueba el espacio disponible del navegador.";
+    ? "Guardado y disponible en todos los dispositivos"
+    : materialsSaved && spacesSaved
+      ? "No se pudo compartir. Los cambios siguen en este dispositivo."
+      : "No se pudieron guardar todos los cambios. Comprueba la conexión e inténtalo de nuevo.";
   toast.classList.add("visible");
   if (window.lucide) lucide.createIcons();
 

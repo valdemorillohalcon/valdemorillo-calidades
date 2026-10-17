@@ -57,10 +57,12 @@ Estructurada a partir del **Plano 03 (Distribución y Superficies de Planta Baja
 
 ---
 
-### 5. ☁️ Sincronización en la Nube (GitHub Pages)
-- Guardado automático en el navegador (`localStorage`) y confirmación visible con el botón «Guardar».
-- El guardado desde la aplicación es local al dispositivo; los datos no se envían a GitHub. Los cambios del código se publican por separado mediante Git, nunca con credenciales embebidas en el navegador.
-- No hay cuentas ni permisos por usuario: cualquier visitante puede editar los datos en su navegador y esos cambios no se sincronizan automáticamente con el aparejador ni con otros dispositivos.
+### 5. ☁️ Almacenamiento compartido (Supabase)
+- Materiales y estancias se guardan en Supabase; `localStorage` se conserva como caché y respaldo local.
+- Al primer acceso, si el registro compartido aún no existe, la aplicación lo inicializa con los datos de ese navegador. Después, los cambios se guardan en el almacén común y las demás sesiones los reciben mediante actualización periódica.
+- La tabla `public.shared_app_state` tiene RLS activado y solo admite el registro fijo `id = 1`. La política actual permite lectura y edición anónimas según la decisión del proyecto: cualquier visitante con el enlace puede modificar o borrar los datos a través de la interfaz.
+- La clave `publishable` incluida en `supabase-config.js` es pública y está limitada por RLS. Nunca añadir una clave `secret`/`service_role` al cliente.
+- GitHub Pages sigue publicando solamente el código; el botón «Guardar» no publica cambios en Git ni en GitHub.
 
 ---
 
