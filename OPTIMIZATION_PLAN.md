@@ -97,6 +97,19 @@ El error Git reproducido era un problema de historial del repositorio, no del te
 - Se versionaron las URLs de CSS y JavaScript para que la confirmación corregida no quede oculta por cachés del navegador.
 - Validación en navegador: cambio de dato sobrevivió a una recarga real y se restauró exactamente el almacenamiento original; el aviso quedó fuera del lightbox, apareció con el estado de éxito y el botón siguió disponible ante cuota de almacenamiento simulada.
 
+## Almacenamiento compartido entre dispositivos
+
+- Se confirmó el proyecto Supabase `narqcdtjxwoynmfqacmu` en la organización del usuario; clave `publishable`, nunca `secret`/`service_role`.
+- Se preparó `public.shared_app_state` con RLS y políticas limitadas a la fila `id = 1`, permitiendo lectura, inserción inicial y actualización anónimas según la opción pública elegida.
+- La aplicación carga el registro compartido al iniciar, lo inicializa una sola vez desde los datos locales existentes si está vacío, sincroniza los cambios automáticos y actualiza otras sesiones mediante sondeo cada 15 segundos.
+- La integración mantiene `localStorage` como caché/respaldo offline y distingue explícitamente entre persistencia compartida y cambios que solo están en el dispositivo.
+- La política pública permite que cualquier visitante con el enlace edite la información; no se presenta como autenticación ni como control de acceso.
+- Verificación real: el endpoint anónimo responde con RLS; se inicializó la fila común con 65 materiales y 15 estancias del almacenamiento local existente.
+- Prueba entre dos sesiones: un cambio reversible enviado desde una sesión apareció en la otra mediante sondeo; la modificación se restauró en Supabase y ambas cachés quedaron consistentes.
+- Prueba de recarga: se introdujo un valor local obsoleto en la segunda sesión y, al recargar, prevalecieron los datos compartidos del servidor (65/15), reemplazando la caché.
+- Prueba de errores y reintento: un fallo de red simulado se informó como almacenamiento solo local, mantuvo disponible el botón y una escritura posterior volvió a compartir el estado correctamente. Las 5 pruebas de persistencia del tema siguen pasando.
+- Publicación: integrar esta implementación en `main` mediante PR; GitHub Pages despliega automáticamente el código.
+
 ## Registro de fases
 
 | Fecha | Fase | Resultado | Rama / PR | Estado |
@@ -105,4 +118,5 @@ El error Git reproducido era un problema de historial del repositorio, no del te
 | 2026-10-17 | 2 — Tema y publicación segura | Preferencia segura, exportación de datos para rama/PR y 5 pruebas de navegador; se eliminó la escritura GitHub desde el cliente | `fix/theme-save-bug` / [PR #1](https://github.com/valdemorillohalcon/valdemorillo-calidades/pull/1) | Integrada y publicada |
 | 2026-10-17 | 3 — Modernización UI/UX | Nuevo inicio visual, navegación e iconografía, guardado local sencillo, limpieza de acciones técnicas y verificación responsive | `feat/modern-ui` / [PR #2](https://github.com/valdemorillohalcon/valdemorillo-calidades/pull/2) | Integrada y publicada |
 | 2026-10-17 | 4 — Organización y área del aparejador | Capítulos plegables y búsqueda orientada a resultados, marca de Laura y Alex, documentación técnica, edición/local y recarga fiable de recursos cacheados | `feat/organized-material-browser` | Integrada en `main` mediante PR #3; versionado de recursos para clientes con caché antigua |
-| Pendiente | Revisión del guardado | Aviso de confirmación visible, estado del botón coherente con el resultado de almacenamiento y validación de recuperación local | `fix/save-confirmation` | Verificada localmente; pendiente de publicación |
+| 2026-10-17 | Revisión del guardado | Aviso visible y estado de confirmación coherente con escritura y recuperación local | `fix/save-confirmation` / [PR #5](https://github.com/valdemorillohalcon/valdemorillo-calidades/pull/5) | Integrada y publicada |
+| 2026-10-17 | Almacenamiento compartido | Sincronización de datos de materiales/estancias a Supabase con RLS y actualización entre sesiones | `feat/shared-cloud-storage` | Implementación lista; publicación por PR a `main` |
