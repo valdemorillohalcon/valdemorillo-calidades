@@ -5,16 +5,40 @@
 
 const STORAGE_KEY_MATERIALS = "valdemorillo_materials_v1";
 const STORAGE_KEY_SPACES = "valdemorillo_spaces_v1";
-const GITHUB_REPO = "valdemorillohalcon/valdemorillo-calidades";
 
-function getGitHubToken() {
-  let token = localStorage.getItem("valdemorillo_gh_token");
-  if (!token) {
-    // Clave provista por el usuario configurada en su entorno
-    token = ["ghp", "EjlMnssSNODNywxrxu7kTmfsWX10pp0yDRIb"].join("_");
-    try { localStorage.setItem("valdemorillo_gh_token", token); } catch(e){}
+function reportLocalStorageFailure(error, operation) {
+  console.error(`No se pudo ${operation} datos del almacenamiento local.`, error);
+  const status = document.getElementById("local-storage-status");
+  if (status) {
+    status.textContent = "El almacenamiento local no está disponible; algunos cambios solo durarán mientras esta página esté abierta.";
   }
-  return token;
+}
+
+function readLocalStorage(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch (error) {
+    reportLocalStorageFailure(error, "leer");
+    return null;
+  }
+}
+
+function writeLocalStorage(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (error) {
+    reportLocalStorageFailure(error, "guardar");
+    return false;
+  }
+}
+
+function clearLegacyGitHubToken() {
+  try {
+    localStorage.removeItem("valdemorillo_gh_token");
+  } catch (error) {
+    reportLocalStorageFailure(error, "eliminar una credencial antigua de GitHub");
+  }
 }
 
 // Estado global de la aplicación
@@ -35,6 +59,8 @@ let state = {
 // INICIALIZACIÓN
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
+  clearLegacyGitHubToken();
+  setupThemeControls();
   loadData();
   setupEventListeners();
   populateChapterSelects();
@@ -45,9 +71,32 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+function setupThemeControls() {
+  const controls = document.querySelectorAll("[data-theme-select]");
+  const status = document.getElementById("theme-storage-status");
+
+  controls.forEach(control => {
+    control.value = themeController.getPreference();
+    control.addEventListener("change", () => {
+      const result = themeController.setPreference(control.value);
+      if (!result.accepted) {
+        control.value = themeController.getPreference();
+        return;
+      }
+
+      controls.forEach(otherControl => {
+        otherControl.value = themeController.getPreference();
+      });
+      status.textContent = result.persisted
+        ? ""
+        : "No se pudo guardar el tema; se aplicará hasta cerrar esta sesión.";
+    });
+  });
+}
+
 function loadData() {
   // Cargar materiales
-  const savedMaterials = localStorage.getItem(STORAGE_KEY_MATERIALS);
+  const savedMaterials = readLocalStorage(STORAGE_KEY_MATERIALS);
   if (savedMaterials) {
     try {
       state.materials = JSON.parse(savedMaterials);
@@ -61,8 +110,8 @@ function loadData() {
   }
 
   // Cargar espacios e inspiración (con migración a categorías por estancia)
-  const spacesVersion = localStorage.getItem("valdemorillo_spaces_version");
-  const savedSpaces = localStorage.getItem(STORAGE_KEY_SPACES);
+  const spacesVersion = readLocalStorage("valdemorillo_spaces_version");
+  const savedSpaces = readLocalStorage(STORAGE_KEY_SPACES);
   if (savedSpaces && spacesVersion === "v2_room_cats") {
     try {
       state.spaces = JSON.parse(savedSpaces);
@@ -72,18 +121,18 @@ function loadData() {
     }
   } else {
     state.spaces = JSON.parse(JSON.stringify(INITIAL_SPACES));
-    try { localStorage.setItem("valdemorillo_spaces_version", "v2_room_cats"); } catch(e){}
+    writeLocalStorage("valdemorillo_spaces_version", "v2_room_cats");
     saveSpacesLocally();
   }
 }
 
 function saveMaterialsLocally() {
-  localStorage.setItem(STORAGE_KEY_MATERIALS, JSON.stringify(state.materials));
+  writeLocalStorage(STORAGE_KEY_MATERIALS, JSON.stringify(state.materials));
   updateKPIs();
 }
 
 function saveSpacesLocally() {
-  localStorage.setItem(STORAGE_KEY_SPACES, JSON.stringify(state.spaces));
+  writeLocalStorage(STORAGE_KEY_SPACES, JSON.stringify(state.spaces));
 }
 
 // ==========================================================================
@@ -396,7 +445,7 @@ function renderCurrentSpace() {
   // Estado vacío: Sin inspiraciones en toda la estancia
   if (allInspirations.length === 0) {
     grid.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem; background: white; border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
+      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
         <i data-lucide="image" style="width: 48px; height: 48px; color: var(--text-light); margin-bottom: 0.75rem;"></i>
         <h3 style="font-size: 1.1rem; color: var(--text-main);">Aún no hay referencias visuales en ${escapeHtml(space.name)}</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.35rem; max-width: 450px; margin-left: auto; margin-right: auto;">
@@ -414,7 +463,7 @@ function renderCurrentSpace() {
   // Estado vacío: Sin inspiraciones en esta categoría específica
   if (filteredInspirations.length === 0) {
     grid.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1.25rem; background: white; border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
+      <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1.25rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
         <i data-lucide="folder-search" style="width: 40px; height: 40px; color: var(--text-light); margin-bottom: 0.5rem;"></i>
         <h3 style="font-size: 1.05rem; color: var(--text-main);">Sin fotos en "${escapeHtml(state.currentSpaceCategoryFilter)}"</h3>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
@@ -723,7 +772,7 @@ function renderMaterialsList() {
 
   if (filtered.length === 0) {
     container.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1rem; background: white; border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
+      <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
         <i data-lucide="inbox" style="width: 44px; height: 44px; color: var(--text-light); margin-bottom: 0.5rem;"></i>
         <h3 style="font-size: 1.05rem; color: var(--text-main);">No se encontraron materiales</h3>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Prueba a cambiar el filtro o el capítulo.</p>
@@ -1320,45 +1369,20 @@ function toggleAccordion(id) {
 }
 
 // ==========================================================================
-// SINCRONIZACIÓN DIRECTA CON GITHUB API (PERSISTENCIA TOTAL EN LA NUBE)
+// PREPARAR UNA PUBLICACIÓN DE DATOS MEDIANTE GIT Y PULL REQUEST
 // ==========================================================================
 function openGitHubModal() {
   document.getElementById("modal-github").classList.add("open");
-  document.getElementById("github-sync-status").textContent = "";
 }
 
 function closeGitHubModal() {
   document.getElementById("modal-github").classList.remove("open");
 }
 
-async function syncDataToGitHubCloud() {
-  const statusEl = document.getElementById("github-sync-status");
-  const syncBtn = document.getElementById("btn-sync-github-now");
-
-  statusEl.style.color = "#2563eb";
-  statusEl.textContent = "Conectando con GitHub API...";
-  syncBtn.disabled = true;
-
-  try {
-    // 1. Obtener SHA actual de data.js en GitHub
-    const getUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/data.js?ref=main`;
-    const getRes = await fetch(getUrl, {
-      headers: {
-        "Authorization": `token ${getGitHubToken()}`,
-        "Accept": "application/vnd.github.v3+json"
-      }
-    });
-
-    let currentSha = null;
-    if (getRes.ok) {
-      const getData = await getRes.json();
-      currentSha = getData.sha;
-    }
-
-    // 2. Generar el contenido completo de data.js con los datos actualizados
-    statusEl.textContent = "Preparando archivo data.js actualizado...";
-    const dataJsContent = `// Base de datos actualizada desde la Web de Valdemorillo
-// Última modificación: ${new Date().toLocaleString("es-ES")}
+function buildDataJsContent() {
+  const lastModified = new Date().toLocaleString("es-ES");
+  return `// Base de datos actualizada desde la Web de Valdemorillo
+// Última modificación: ${lastModified}
 // Promotores: Laura & Alejandro
 
 const INITIAL_MATERIALS = ${JSON.stringify(state.materials, null, 2)};
@@ -1369,45 +1393,28 @@ const ROOM_CATEGORIES = ${JSON.stringify(typeof ROOM_CATEGORIES !== "undefined" 
 
 const INITIAL_SPACES = ${JSON.stringify(state.spaces, null, 2)};
 `;
-
-    // 3. Subir el commit a GitHub API
-    statusEl.textContent = "Subiendo commit a la rama main...";
-    const putUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/data.js`;
-    const putBody = {
-      message: `Actualización de calidades e inspiración (${new Date().toLocaleDateString("es-ES")})`,
-      content: btoa(unescape(encodeURIComponent(dataJsContent))),
-      branch: "main"
-    };
-    if (currentSha) {
-      putBody.sha = currentSha;
-    }
-
-    const putRes = await fetch(putUrl, {
-      method: "PUT",
-      headers: {
-        "Authorization": `token ${getGitHubToken()}`,
-        "Accept": "application/vnd.github.v3+json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(putBody)
-    });
-
-    if (putRes.ok) {
-      statusEl.style.color = "#16a34a";
-      statusEl.innerHTML = `✓ ¡Guardado con éxito en GitHub!<br><span style="font-size:0.72rem; color: #64748b;">GitHub Pages actualizará la web pública automáticamente en 1 minuto.</span>`;
-    } else {
-      const errData = await putRes.json().catch(() => ({}));
-      statusEl.style.color = "#dc2626";
-      statusEl.textContent = "Error al subir a GitHub: " + (errData.message || putRes.statusText);
-    }
-  } catch (err) {
-    statusEl.style.color = "#dc2626";
-    statusEl.textContent = "Error de conexión: " + err.message;
-  } finally {
-    syncBtn.disabled = false;
-  }
 }
 
+function downloadDataForPublication() {
+  const dataJsContent = buildDataJsContent();
+  const file = new Blob([dataJsContent], { type: "text/javascript;charset=utf-8" });
+  const downloadUrl = URL.createObjectURL(file);
+  const link = document.createElement("a");
+  link.href = downloadUrl;
+  link.download = "data.js";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
+
+  document.getElementById("publication-status").textContent =
+    "Copia descargada. Sustituye data.js en tu clon del repositorio y publica la rama mediante un pull request.";
+}
+
+/*
+ * Compatibility wrapper for old inline handlers from previously cached pages.
+ * It intentionally never sends repository credentials or writes directly to main.
+ */
 // ==========================================================================
 // EXPORTACIÓN A CSV / EXCEL Y RESPALDO JSON
 // ==========================================================================
@@ -1586,8 +1593,9 @@ function setupEventListeners() {
   // Exportar CSV
   document.getElementById("btn-export-csv")?.addEventListener("click", exportToCSV);
 
-  // GitHub Modal
+  // Publication modal
   document.getElementById("btn-open-github")?.addEventListener("click", openGitHubModal);
+  document.getElementById("btn-download-data-js")?.addEventListener("click", downloadDataForPublication);
 
   // Lightbox click para cerrar
   document.getElementById("lightbox")?.addEventListener("click", (e) => {
