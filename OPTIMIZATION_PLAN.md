@@ -85,6 +85,7 @@ El error Git reproducido era un problema de historial del repositorio, no del te
 - La documentación explica el acceso de edición y ofrece «Editar partidas» para volver a las fichas, donde se pueden actualizar calidades, mediciones, precios, estados, notas y referencias.
 - Límite de producto: la página estática no dispone de cuentas o permisos diferenciados. Cualquier visitante puede editar datos en su navegador, pero estos cambios se guardan localmente y no se sincronizan con los dispositivos de otros colaboradores. La app lo comunica sin prometer permisos que no existen.
 - Verificación en navegador: 14 capítulos / 65 partidas en la vista «Todo», un solo capítulo abierto a la vez, búsqueda que mostró 7 resultados, selector de capítulo que expande directamente su grupo y documentación con 65 filas. A 320 px no hay desbordamiento horizontal.
+- GitHub Pages desplegó el cambio. La verificación detectó que una sesión de navegador seguía usando el JavaScript previo por caché; las URLs con versión fuerzan la descarga de JavaScript, datos, estilos e icono actualizados.
 
 ## Registro de fases
 
@@ -93,4 +94,4 @@ El error Git reproducido era un problema de historial del repositorio, no del te
 | 2026-10-17 | 1 — Diagnóstico | Tema inexistente; error de Git por historiales sin ancestro común; documentados riesgos independientes de almacenamiento y sincronización web | `main` | Completada |
 | 2026-10-17 | 2 — Tema y publicación segura | Preferencia segura, exportación de datos para rama/PR y 5 pruebas de navegador; se eliminó la escritura GitHub desde el cliente | `fix/theme-save-bug` / [PR #1](https://github.com/valdemorillohalcon/valdemorillo-calidades/pull/1) | Integrada y publicada |
 | 2026-10-17 | 3 — Modernización UI/UX | Nuevo inicio visual, navegación e iconografía, guardado local sencillo, limpieza de acciones técnicas y verificación responsive | `feat/modern-ui` / [PR #2](https://github.com/valdemorillohalcon/valdemorillo-calidades/pull/2) | Integrada y publicada |
-| 2026-10-17 | 4 — Organización y área del aparejador | Capítulos plegables y búsqueda orientada a resultados, marca de Laura y Alex, documentación técnica y explicación de edición/localidad | `feat/organized-material-browser` | Implementada y validada localmente; pendiente de publicación |
+| 2026-10-17 | 4 — Organización y área del aparejador | Capítulos plegables y búsqueda orientada a resultados, marca de Laura y Alex, documentación técnica, edición/local y recarga fiable de recursos cacheados | `feat/organized-material-browser` | Integrada en `main` mediante PR #3; versionado de recursos para clientes con caché antigua |
