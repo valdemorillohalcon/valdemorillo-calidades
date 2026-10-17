@@ -36,9 +36,9 @@ No mezclar los cambios de persistencia del tema con la modernización visual.
 
 ### Conclusión
 
-El error Git reproducido era un problema de historial del repositorio, no del tema ni de un error JavaScript causado por cambiarlo. El futuro fix de tema debe crear la funcionalidad ausente y no debe modificar `data.js`, invocar la sincronización GitHub ni alterar el estado de materiales/estancias.
+El error Git reproducido era un problema de historial del repositorio, no del tema ni de un error JavaScript causado por cambiarlo. La Fase 2 añade la preferencia de tema que faltaba; no modifica `data.js` ni invoca la sincronización GitHub.
 
-## Fase 2 — Persistencia segura del tema (pendiente)
+## Fase 2 — Persistencia segura del tema (implementada; publicación pendiente)
 
 ### Requisitos y aceptación
 
@@ -49,15 +49,17 @@ El error Git reproducido era un problema de historial del repositorio, no del te
 - Probar selección, recarga, valor inválido, ausencia de preferencia y almacenamiento inaccesible.
 - No cambiar la lógica ni los datos de sincronización con GitHub como parte del fix de tema.
 
-### Trabajo previsto
+### Implementación y verificación
 
-1. Crear la rama `fix/theme-save-bug` desde `main`.
-2. Implementar la selección y persistencia de tema siguiendo los requisitos anteriores.
-3. Añadir pruebas automatizadas adecuadas al proyecto y ejecutar las verificaciones pertinentes.
-4. Actualizar este plan al completar la fase.
-5. Crear commits pequeños y un pull request exclusivo para el fix.
+1. Rama `fix/theme-save-bug` creada desde `main`.
+2. `theme.js` aplica `light`, `dark` o `system` antes de cargar los estilos, persiste bajo `app-theme` y sigue aplicando el tema a la sesión si el almacenamiento falla.
+3. Se añadieron controles accesibles para escritorio y móvil, estilos para claro/oscuro y un aviso visible si no se puede persistir.
+4. Las lecturas y escrituras de `localStorage` de materiales/estancias ahora notifican errores y no interrumpen la inicialización; los datos permanecen operativos en memoria durante la sesión.
+5. Se añadió un test runner de navegador sin dependencias en [`tests/theme.test.html`](./tests/theme.test.html). Resultado: 5 pruebas correctas, 0 fallidas. La prueba de integración con `localStorage` bloqueado cargó la aplicación y renderizó 42 tarjetas; la vista móvil no desbordó a 375 px ni 320 px.
+6. El entorno no tiene Node.js ni un runner JavaScript de consola; se validó la aplicación y el test runner en el navegador integrado.
+7. Commits locales: `e94ea85` (diagnóstico) y `68eb4a3` (fix y pruebas).
 
-**Estado:** pendiente de autorización para comenzar la implementación.
+**Estado:** implementación y pruebas completadas localmente. El pull request aún no está creado ni la rama publicada: antes de enviar código a GitHub hay que retirar o sustituir de forma segura la credencial de GitHub incrustada en `app.js` y revocarla/rotarla. No se debe volver a publicar como secreto del cliente.
 
 ## Fase 3 — Modernización UI/UX (bloqueada hasta aprobar el fix)
 
@@ -73,5 +75,5 @@ El error Git reproducido era un problema de historial del repositorio, no del te
 | Fecha | Fase | Resultado | Rama / PR | Estado |
 |---|---|---|---|---|
 | 2026-10-17 | 1 — Diagnóstico | Tema inexistente; error de Git por historiales sin ancestro común; documentados riesgos independientes de almacenamiento y sincronización web | `main` | Completada |
-|  | 2 — Persistencia del tema | Pendiente | `fix/theme-save-bug` | Bloqueada hasta autorización |
+| 2026-10-17 | 2 — Persistencia del tema | Preferencia segura, controles, estilos, fallback y 5 pruebas de navegador; publicación requiere sanear una credencial preexistente | `fix/theme-save-bug` | Implementada localmente; PR pendiente |
 |  | 3 — Modernización UI/UX | Pendiente de aprobación del fix | `feat/modern-ui` | Bloqueada |
