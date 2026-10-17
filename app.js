@@ -7,12 +7,39 @@ const STORAGE_KEY_MATERIALS = "valdemorillo_materials_v1";
 const STORAGE_KEY_SPACES = "valdemorillo_spaces_v1";
 const GITHUB_REPO = "valdemorillohalcon/valdemorillo-calidades";
 
+function reportLocalStorageFailure(error, operation) {
+  console.error(`No se pudo ${operation} datos del almacenamiento local.`, error);
+  const status = document.getElementById("local-storage-status");
+  if (status) {
+    status.textContent = "El almacenamiento local no está disponible; algunos cambios solo durarán mientras esta página esté abierta.";
+  }
+}
+
+function readLocalStorage(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch (error) {
+    reportLocalStorageFailure(error, "leer");
+    return null;
+  }
+}
+
+function writeLocalStorage(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (error) {
+    reportLocalStorageFailure(error, "guardar");
+    return false;
+  }
+}
+
 function getGitHubToken() {
-  let token = localStorage.getItem("valdemorillo_gh_token");
+  let token = readLocalStorage("valdemorillo_gh_token");
   if (!token) {
     // Clave provista por el usuario configurada en su entorno
     token = ["ghp", "EjlMnssSNODNywxrxu7kTmfsWX10pp0yDRIb"].join("_");
-    try { localStorage.setItem("valdemorillo_gh_token", token); } catch(e){}
+    writeLocalStorage("valdemorillo_gh_token", token);
   }
   return token;
 }
@@ -35,6 +62,7 @@ let state = {
 // INICIALIZACIÓN
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
+  setupThemeControls();
   loadData();
   setupEventListeners();
   populateChapterSelects();
@@ -45,9 +73,32 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+function setupThemeControls() {
+  const controls = document.querySelectorAll("[data-theme-select]");
+  const status = document.getElementById("theme-storage-status");
+
+  controls.forEach(control => {
+    control.value = themeController.getPreference();
+    control.addEventListener("change", () => {
+      const result = themeController.setPreference(control.value);
+      if (!result.accepted) {
+        control.value = themeController.getPreference();
+        return;
+      }
+
+      controls.forEach(otherControl => {
+        otherControl.value = themeController.getPreference();
+      });
+      status.textContent = result.persisted
+        ? ""
+        : "No se pudo guardar el tema; se aplicará hasta cerrar esta sesión.";
+    });
+  });
+}
+
 function loadData() {
   // Cargar materiales
-  const savedMaterials = localStorage.getItem(STORAGE_KEY_MATERIALS);
+  const savedMaterials = readLocalStorage(STORAGE_KEY_MATERIALS);
   if (savedMaterials) {
     try {
       state.materials = JSON.parse(savedMaterials);
@@ -61,8 +112,8 @@ function loadData() {
   }
 
   // Cargar espacios e inspiración (con migración a categorías por estancia)
-  const spacesVersion = localStorage.getItem("valdemorillo_spaces_version");
-  const savedSpaces = localStorage.getItem(STORAGE_KEY_SPACES);
+  const spacesVersion = readLocalStorage("valdemorillo_spaces_version");
+  const savedSpaces = readLocalStorage(STORAGE_KEY_SPACES);
   if (savedSpaces && spacesVersion === "v2_room_cats") {
     try {
       state.spaces = JSON.parse(savedSpaces);
@@ -72,18 +123,18 @@ function loadData() {
     }
   } else {
     state.spaces = JSON.parse(JSON.stringify(INITIAL_SPACES));
-    try { localStorage.setItem("valdemorillo_spaces_version", "v2_room_cats"); } catch(e){}
+    writeLocalStorage("valdemorillo_spaces_version", "v2_room_cats");
     saveSpacesLocally();
   }
 }
 
 function saveMaterialsLocally() {
-  localStorage.setItem(STORAGE_KEY_MATERIALS, JSON.stringify(state.materials));
+  writeLocalStorage(STORAGE_KEY_MATERIALS, JSON.stringify(state.materials));
   updateKPIs();
 }
 
 function saveSpacesLocally() {
-  localStorage.setItem(STORAGE_KEY_SPACES, JSON.stringify(state.spaces));
+  writeLocalStorage(STORAGE_KEY_SPACES, JSON.stringify(state.spaces));
 }
 
 // ==========================================================================
@@ -396,7 +447,7 @@ function renderCurrentSpace() {
   // Estado vacío: Sin inspiraciones en toda la estancia
   if (allInspirations.length === 0) {
     grid.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem; background: white; border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
+      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
         <i data-lucide="image" style="width: 48px; height: 48px; color: var(--text-light); margin-bottom: 0.75rem;"></i>
         <h3 style="font-size: 1.1rem; color: var(--text-main);">Aún no hay referencias visuales en ${escapeHtml(space.name)}</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.35rem; max-width: 450px; margin-left: auto; margin-right: auto;">
@@ -414,7 +465,7 @@ function renderCurrentSpace() {
   // Estado vacío: Sin inspiraciones en esta categoría específica
   if (filteredInspirations.length === 0) {
     grid.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1.25rem; background: white; border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
+      <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1.25rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
         <i data-lucide="folder-search" style="width: 40px; height: 40px; color: var(--text-light); margin-bottom: 0.5rem;"></i>
         <h3 style="font-size: 1.05rem; color: var(--text-main);">Sin fotos en "${escapeHtml(state.currentSpaceCategoryFilter)}"</h3>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
@@ -723,7 +774,7 @@ function renderMaterialsList() {
 
   if (filtered.length === 0) {
     container.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1rem; background: white; border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
+      <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
         <i data-lucide="inbox" style="width: 44px; height: 44px; color: var(--text-light); margin-bottom: 0.5rem;"></i>
         <h3 style="font-size: 1.05rem; color: var(--text-main);">No se encontraron materiales</h3>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Prueba a cambiar el filtro o el capítulo.</p>

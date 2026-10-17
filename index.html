@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Control de Materiales & Inspiración · Calle Alcón 9, Valdemorillo</title>
   <meta name="description" content="Portal de selección de calidades, comparativa de materiales, inspiración de espacios y presupuesto para Laura y Alejandro en Valdemorillo.">
+  <script src="theme.js"></script>
   <link rel="stylesheet" href="styles.css">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -48,6 +49,14 @@
         <button class="btn btn-primary btn-sm" id="btn-top-add" onclick="handleTopAddAction()">
           <i data-lucide="plus-circle"></i> <span id="top-add-label">Nuevo Material</span>
         </button>
+        <label class="theme-control">
+          <span>Tema</span>
+          <select class="theme-select" data-theme-select aria-label="Tema de la aplicación">
+            <option value="system">Sistema</option>
+            <option value="light">Claro</option>
+            <option value="dark">Oscuro</option>
+          </select>
+        </label>
         <button class="btn btn-secondary btn-sm" id="btn-open-github" title="Sincronizar con GitHub">
           <i data-lucide="cloud"></i> Guardar en GitHub
         </button>
@@ -61,11 +70,21 @@
         <button class="btn btn-primary btn-sm" id="btn-mobile-top-add" onclick="handleTopAddAction()">
           <i data-lucide="plus"></i> <span id="mobile-top-add-label">Añadir</span>
         </button>
+        <label class="theme-control">
+          <span>Tema</span>
+          <select class="theme-select" data-theme-select aria-label="Tema de la aplicación">
+            <option value="system">Sistema</option>
+            <option value="light">Claro</option>
+            <option value="dark">Oscuro</option>
+          </select>
+        </label>
         <button class="btn btn-secondary btn-sm" onclick="openGitHubModal()">
           <i data-lucide="cloud"></i>
         </button>
       </div>
     </div>
+    <p id="theme-storage-status" class="theme-storage-status" role="status" aria-live="polite"></p>
+    <p id="local-storage-status" class="theme-storage-status" role="status" aria-live="polite"></p>
   </header>
 
   <!-- =========================================================================

@@ -45,6 +45,29 @@
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --primary: #cbd5e1;
+  --primary-dark: #e2e8f0;
+  --primary-light: #94a3b8;
+  --accent: #fbbf24;
+  --accent-hover: #fcd34d;
+  --accent-soft: #422006;
+  --accent-text: #fde68a;
+  --bg-page: #0b1120;
+  --bg-card: #111827;
+  --bg-card-alt: #1e293b;
+  --border-color: #334155;
+  --border-focus: #475569;
+  --text-main: #e2e8f0;
+  --text-muted: #cbd5e1;
+  --text-light: #94a3b8;
+  --status-pending-bg: #422006;
+  --status-reviewing-bg: #172554;
+  --status-selected-bg: #052e24;
+  --criteria-badge-bg: #2e1065;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -188,6 +211,43 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.theme-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.theme-select {
+  min-height: 2.25rem;
+  padding: 0.35rem 1.6rem 0.35rem 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-main);
+  font: inherit;
+}
+
+.theme-select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.theme-storage-status {
+  max-width: 1440px;
+  margin: 0.4rem auto 0;
+  padding: 0 1.5rem;
+  color: #fde68a;
+  font-size: 0.75rem;
+}
+
+.theme-storage-status:empty {
+  display: none;
 }
 
 /* ==========================================================================
@@ -1633,6 +1693,17 @@ body {
 
   .header-container {
     gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .mobile-header-quick {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .theme-select {
+    width: 92px;
+    padding-right: 0.25rem;
   }
 
   .header-titles h1 {
@@ -1724,8 +1795,97 @@ body {
   }
 }
 
-/* ==========================================================================
-   ESTILOS DE IMPRESIÓN (PRINT STYLESHEET)
+  :root[data-theme="dark"] .nav-btn.active,
+  :root[data-theme="dark"] .btn-outline,
+  :root[data-theme="dark"] .search-input,
+  :root[data-theme="dark"] .select-chapter,
+  :root[data-theme="dark"] .select-sort,
+  :root[data-theme="dark"] .accordion-content,
+  :root[data-theme="dark"] .calc-input-unit,
+  :root[data-theme="dark"] .option-card,
+  :root[data-theme="dark"] .space-pill,
+  :root[data-theme="dark"] .room-hero-card,
+  :root[data-theme="dark"] .room-cat-chip,
+  :root[data-theme="dark"] .inspiration-card,
+  :root[data-theme="dark"] .dossier-card,
+  :root[data-theme="dark"] .modal-box {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+  }
+
+  :root[data-theme="dark"] .nav-btn.active {
+    color: var(--text-main);
+  }
+
+  :root[data-theme="dark"] .filter-tab.active,
+  :root[data-theme="dark"] .space-pill.active,
+  :root[data-theme="dark"] .dossier-table th {
+    background-color: #334155;
+    border-color: #475569;
+    color: #f8fafc;
+  }
+
+  :root[data-theme="dark"] .btn-primary {
+    background-color: #92400e;
+    color: #fff7ed;
+  }
+
+  :root[data-theme="dark"] .btn-primary:hover {
+    background-color: #78350f;
+  }
+
+  :root[data-theme="dark"] .kpi-card,
+  :root[data-theme="dark"] .controls-card,
+  :root[data-theme="dark"] .material-card,
+  :root[data-theme="dark"] .calc-box,
+  :root[data-theme="dark"] .comments-box,
+  :root[data-theme="dark"] .image-preview-box,
+  :root[data-theme="dark"] .url-helper-tip {
+    background-color: var(--bg-card-alt);
+    color: var(--text-main);
+  }
+
+  :root[data-theme="dark"] .option-card.option-selected {
+    background: #12352d;
+  }
+
+  :root[data-theme="dark"] .callout-criteria {
+    background: #2b1d39;
+    color: #e9d5ff;
+  }
+
+  :root[data-theme="dark"] .callout-builder,
+  :root[data-theme="dark"] .constructive-box,
+  :root[data-theme="dark"] .room-cat-chip.active {
+    background: #422006;
+    color: #fde68a;
+  }
+
+  :root[data-theme="dark"] .room-badge-surface,
+  :root[data-theme="dark"] .room-badge-orient {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-color: #475569;
+  }
+
+  :root[data-theme="dark"] .room-constructive-checklist {
+    background: #1c1917;
+    border-color: #44403c;
+  }
+
+  :root[data-theme="dark"] .constructive-checklist-title,
+  :root[data-theme="dark"] .constructive-checklist-items li,
+  :root[data-theme="dark"] .room-description,
+  :root[data-theme="dark"] .option-notes {
+    color: #e2e8f0;
+  }
+
+  :root[data-theme="dark"] .dossier-table tr:nth-child(even) td {
+    background-color: var(--bg-card-alt);
+  }
+
+  /* ==========================================================================
+     ESTILOS DE IMPRESIÓN (PRINT STYLESHEET)
    ========================================================================== */
 @media print {
   body {
