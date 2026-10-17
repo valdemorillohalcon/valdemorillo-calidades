@@ -1,5 +1,5 @@
 // Base de datos actualizada desde la Web de Valdemorillo
-// Última modificación: 17/10/2026, 11:23:44
+// Última modificación: 17/10/2026, 16:36:25
 // Promotores: Laura & Alejandro
 
 const INITIAL_MATERIALS = [
@@ -224,7 +224,7 @@ const INITIAL_MATERIALS = [
     "explanation": "Cobertura exterior de teja de hormigón de alta durabilidad y resistencia a heladas en Valdemorillo. Incluye piezas especiales de cumbrera, ventilación, remates laterales y canalones con bajantes de evacuación.",
     "specMemoria": "Cubierta - Cobertura: Tejas de hormigón a dos aguas (con canalones bajantes y piezas de cumbreras, remates laterales y de ventilación).",
     "unitType": "m2",
-    "quantity": 130,
+    "quantity": 200,
     "wastagePercent": 7,
     "targetUnitPrice": 34,
     "status": "pending",
