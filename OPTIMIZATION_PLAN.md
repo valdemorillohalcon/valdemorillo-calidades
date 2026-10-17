@@ -1,103 +1,77 @@
-# Plan de optimización y modernización
+# Plan de corrección y modernización
 
-## Objetivo
-1. Arreglar el bug que impide guardar en Git los cambios realizados al cambiar de tema en la app.
-2. Modernizar la UI/UX con un sistema de temas accesible, rápido y mantenible.
-3. Optimizar rendimiento, accesibilidad y consistencia visual.
+## Alcance y orden
 
-## Reglas
-- No cambiar el comportamiento externo de la aplicación sin justificarlo.
-- Un pull request por bloque de trabajo.
-- Todo cambio debe incluir tests o una verificación manual documentada.
-- No añadir dependencias sin necesidad.
-- Mantener compatibilidad con navegadores y dispositivos actuales.
-- Revisar cada PR con CodeRabbit antes de fusionar.
+1. Diagnosticar el estado actual sin modificar código.
+2. Corregir y probar la persistencia del tema en una rama y PR separados.
+3. Tras la aprobación del fix, modernizar la interfaz en otra rama y PR.
 
-## Fase 1 — Diagnóstico del bug de temas y Git
+No mezclar los cambios de persistencia del tema con la modernización visual.
 
-### Problema
-Al cambiar de tema en la app, los cambios no se guardan correctamente en Git.
+## Fase 1 — Diagnóstico (completada)
 
-### Hipótesis a validar
-- [ ] El tema se aplica en memoria, pero no se persiste en `localStorage`, cookies o perfil del usuario.
-- [ ] El cambio de tema provoca un error de JavaScript que interrumpe el flujo de guardado.
-- [ ] El estado del tema se guarda en un lugar no sincronizado con el resto del estado de la app.
-- [ ] Hay un problema de hidratación, SSR o renderizado que revierte el tema.
-- [ ] El botón o control de cambio de tema no dispara correctamente el guardado.
-- [ ] Hay conflictos de estado entre tema claro, oscuro y tema del sistema.
-- [ ] El guardado de Git falla por otro motivo y el cambio de tema solo lo hace visible.
+### Hallazgos sobre el tema
 
-### Tareas
-- [ ] Identificar el componente, hook o función responsable del cambio de tema.
-- [ ] Identificar dónde se guarda actualmente la preferencia de tema.
-- [ ] Reproducir el bug y documentar pasos exactos.
-- [ ] Revisar la consola del navegador y los errores de red.
-- [ ] Comprobar si el cambio de tema modifica archivos, estado global o llamadas al backend.
-- [ ] Determinar si el fallo es de persistencia del tema, de guardado en Git o de ambos.
-- [ ] Escribir un test que reproduzca el bug antes de aplicar la corrección.
+- La aplicación actual es una página HTML/CSS/JavaScript sin framework.
+- No se encontró selector, función, estado global, listener, clase o atributo de tema.
+- `app.js` no lee ni escribe la clave `app-theme`; tampoco existen valores `light`, `dark` o `system`.
+- `styles.css` define una única paleta clara en `:root`; no hay tema oscuro ni regla `prefers-color-scheme`.
+- No hay SSR ni hidratación que puedan revertir el tema.
+- Por tanto, el cambio de tema no puede ser la causa directa del error de Git observado: ese flujo de tema aún no existe en esta versión del código.
 
-## Fase 2 — Corrección del bug
+### Persistencia y estado existentes
 
-### Criterio de aceptación
-- [ ] Al cambiar de tema, la preferencia se guarda de forma inmediata y segura.
-- [ ] Al recargar la página, el tema seleccionado se mantiene.
-- [ ] Si `localStorage` no está disponible, la app no falla y mantiene el tema en la sesión actual.
-- [ ] El tema del sistema se respeta cuando el usuario no ha elegido uno manualmente.
-- [ ] No hay parpadeo, salto de layout ni pérdida de estado al cambiar de tema.
-- [ ] El usuario puede guardar o confirmar cambios en Git sin errores relacionados con el tema.
-- [ ] Existe un test automatizado para el cambio y la persistencia del tema.
+- `state` contiene materiales, estancias y estado de navegación; no contiene preferencia de tema.
+- Materiales y estancias se guardan localmente en `localStorage` mediante `saveMaterialsLocally()` y `saveSpacesLocally()`.
+- Las lecturas de materiales/estancias y las escrituras ordinarias de esos datos no están protegidas frente a excepciones de `localStorage`. Si el almacenamiento está bloqueado o no disponible, una excepción puede interrumpir la inicialización o la acción de guardado local. Esto es independiente del error de `git pull`.
+- No se encontraron errores de tema ni eventos de tema que revisar, ya que no hay implementación de tema.
 
-### Implementación recomendada
-- Usar variables CSS como sistema de design tokens.
-- Aplicar el tema mediante una clase o atributo en el elemento raíz, por ejemplo `<html class="dark">`.
-- Guardar la preferencia con una clave estable, por ejemplo `app-theme`.
-- Valores permitidos: `light`, `dark` y `system`.
-- Si no hay preferencia guardada, usar `prefers-color-scheme`.
-- Capturar errores de `localStorage` para que la app siga funcionando aunque el almacenamiento esté bloqueado.
+### Diagnóstico de Git y sincronización web
 
-## Fase 3 — Modernización de UI/UX
+- El error adjunto de `git pull --tags origin main` fue causado por historiales divergentes sin ancestro común; Git no podía elegir automáticamente entre merge, rebase o fast-forward.
+- La referencia local se sincronizó con `origin/main`; el commit local previo quedó preservado en `backup/main-pre-sync-2026-10-17`. El árbol de trabajo quedó limpio.
+- El botón de sincronización de la aplicación no ejecuta `git pull` ni guarda la preferencia de tema. `syncDataToGitHubCloud()` serializa materiales y estancias y actualiza únicamente `data.js` mediante la API de contenidos de GitHub.
+- Si la consulta GET de `data.js` no tiene éxito, el flujo continúa sin SHA y trata de hacer el PUT de todas formas. La API requiere el SHA para reemplazar un archivo existente, por lo que ese camino puede fallar y el estado visible depende de la respuesta del PUT.
+- `app.js` contiene una credencial de GitHub embebida en código ejecutado por el navegador. Debe considerarse expuesta, revocarse/rotarse y no volver a distribuirse como secreto del cliente. La sincronización necesitará una solución de autorización segura antes de considerarse apta para producción.
 
-### Principios
-- [ ] Diseño limpio, jerarquía visual clara y espaciado consistente.
-- [ ] Contraste mínimo WCAG AA en ambos temas.
-- [ ] Estados visibles para hover, focus, active, disabled, loading y error.
-- [ ] Navegación por teclado completa.
-- [ ] Etiquetas, roles ARIA y textos accesibles.
-- [ ] Animaciones breves y respetando `prefers-reduced-motion`.
-- [ ] Diseño responsive desde móvil.
-- [ ] Sin cambios bruscos de layout al cargar o cambiar tema.
+### Conclusión
 
-### Bibliotecas recomendadas
-- **Tailwind CSS**: sistema de utilidades y design tokens.
-- **shadcn/ui**: componentes modernos, personalizables y con propiedad total del código.
-- **Radix UI**: primitivas accesibles para diálogos, menús, tooltips y controles.
-- **Lucide**: iconografía ligera y consistente.
-- **Framer Motion**: solo para microinteracciones y transiciones sutiles.
+El error Git reproducido era un problema de historial del repositorio, no del tema ni de un error JavaScript causado por cambiarlo. El futuro fix de tema debe crear la funcionalidad ausente y no debe modificar `data.js`, invocar la sincronización GitHub ni alterar el estado de materiales/estancias.
 
-### Tareas
-- [ ] Auditoría visual de pantallas principales.
-- [ ] Definir tokens de color, tipografía, espaciado, radios y sombras.
-- [ ] Crear tema claro y oscuro con contraste accesible.
-- [ ] Sustituir colores hardcodeados por variables CSS.
-- [ ] Modernizar botones, formularios, tarjetas, modales y navegación.
-- [ ] Mejorar estados de carga, vacío y error.
-- [ ] Revisar la experiencia en móvil.
-- [ ] Ejecutar auditoría de accesibilidad.
+## Fase 2 — Persistencia segura del tema (pendiente)
 
-## Fase 4 — Optimización
+### Requisitos y aceptación
 
-- [ ] Eliminar código duplicado.
-- [ ] Reducir re-renderizados innecesarios.
-- [ ] Cargar componentes pesados de forma diferida.
-- [ ] Optimizar imágenes y recursos estáticos.
-- [ ] Revisar dependencias obsoletas.
-- [ ] Medir rendimiento antes y después.
+- Usar la clave `app-theme` y aceptar únicamente `light`, `dark` y `system`.
+- Si no hay preferencia válida, resolver el aspecto inicial con `prefers-color-scheme`.
+- Persistir de manera segura y no romper la aplicación si `localStorage` falla.
+- Aplicar el tema al elemento raíz y mantener la preferencia separada del estado de materiales y estancias.
+- Probar selección, recarga, valor inválido, ausencia de preferencia y almacenamiento inaccesible.
+- No cambiar la lógica ni los datos de sincronización con GitHub como parte del fix de tema.
 
-## Registro de cambios
+### Trabajo previsto
 
-| Fecha | Módulo | Cambio | PR | Estado |
+1. Crear la rama `fix/theme-save-bug` desde `main`.
+2. Implementar la selección y persistencia de tema siguiendo los requisitos anteriores.
+3. Añadir pruebas automatizadas adecuadas al proyecto y ejecutar las verificaciones pertinentes.
+4. Actualizar este plan al completar la fase.
+5. Crear commits pequeños y un pull request exclusivo para el fix.
+
+**Estado:** pendiente de autorización para comenzar la implementación.
+
+## Fase 3 — Modernización UI/UX (bloqueada hasta aprobar el fix)
+
+- Crear la rama `feat/modern-ui` después de aprobar el fix de la Fase 2.
+- Modernizar con Tailwind CSS, shadcn/ui y Radix UI, comprobando su compatibilidad con la estructura estática actual antes de añadir tooling.
+- Mantener contraste WCAG AA, navegación accesible por teclado y diseño responsive.
+- Incluir estados de carga, error y vacío.
+- Mantener esta fase en un pull request separado, sin mezclarla con el fix de tema.
+- Actualizar este plan al completar la fase.
+
+## Registro de fases
+
+| Fecha | Fase | Resultado | Rama / PR | Estado |
 |---|---|---|---|---|
-|  |  |  |  |  |
-
-## Pendiente
-- (Se actualizará tras el diagnóstico)
+| 2026-10-17 | 1 — Diagnóstico | Tema inexistente; error de Git por historiales sin ancestro común; documentados riesgos independientes de almacenamiento y sincronización web | `main` | Completada |
+|  | 2 — Persistencia del tema | Pendiente | `fix/theme-save-bug` | Bloqueada hasta autorización |
+|  | 3 — Modernización UI/UX | Pendiente de aprobación del fix | `feat/modern-ui` | Bloqueada |
