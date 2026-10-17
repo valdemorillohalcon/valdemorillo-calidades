@@ -30,7 +30,7 @@ No mezclar los cambios de persistencia del tema con la modernización visual.
 
 - El error adjunto de `git pull --tags origin main` fue causado por historiales divergentes sin ancestro común; Git no podía elegir automáticamente entre merge, rebase o fast-forward.
 - La referencia local se sincronizó con `origin/main`; el commit local previo quedó preservado en `backup/main-pre-sync-2026-10-17`. El árbol de trabajo quedó limpio.
-- El botón de sincronización de la aplicación no ejecuta `git pull` ni guarda la preferencia de tema. `syncDataToGitHubCloud()` serializa materiales y estancias y actualiza únicamente `data.js` mediante la API de contenidos de GitHub.
+- Antes de las Fases 2 y 3, el botón de sincronización serializaba materiales y estancias y actualizaba `data.js` directamente con la API de GitHub. Ese comportamiento se eliminó: no ejecutaba `git pull` ni guardaba la preferencia de tema.
 - Si la consulta GET de `data.js` no tiene éxito, el flujo continúa sin SHA y trata de hacer el PUT de todas formas. La API requiere el SHA para reemplazar un archivo existente, por lo que ese camino puede fallar y el estado visible depende de la respuesta del PUT.
 - `app.js` contiene una credencial de GitHub embebida en código ejecutado por el navegador. Debe considerarse expuesta, revocarse/rotarse y no volver a distribuirse como secreto del cliente. La sincronización necesitará una solución de autorización segura antes de considerarse apta para producción.
 
@@ -60,23 +60,27 @@ El error Git reproducido era un problema de historial del repositorio, no del te
 7. La exportación genera `data.js`; la verificación en navegador confirma nombre/contenido, limpia la credencial antigua de `localStorage` y no hace peticiones a la API de GitHub.
 8. Commits locales: `e94ea85` (diagnóstico), `68eb4a3` (fix y pruebas) y pendiente (publicación segura).
 
-**Estado:** implementación y pruebas completadas localmente. El flujo de publicación se sustituyó por exportación de `data.js` y publicación mediante rama Git + pull request; la aplicación no necesita credenciales de escritura. Se eliminó el secreto del código fuente de esta rama y se limpia la clave antigua del almacenamiento local al abrir la app. La credencial filtrada debe revocarse/rotarse desde GitHub; eso no puede hacerse desde este repositorio. PR pendiente.
+**Estado:** implementación y pruebas completadas localmente. El flujo de publicación se sustituyó por exportación de `data.js` y publicación mediante rama Git + pull request; la aplicación no necesita credenciales de escritura. Se eliminó el secreto del código fuente de esta rama y se limpia la clave antigua del almacenamiento local al abrir la app. La credencial filtrada debe revocarse/rotarse desde GitHub; eso no puede hacerse desde este repositorio. El push falló porque Git no tiene credenciales de publicación configuradas en este entorno; PR pendiente.
 
-## Fase 3 — Modernización UI/UX (iniciada; arquitectura por confirmar)
+## Fase 3 — Modernización UI/UX (implementada y verificada en vanilla)
 
-- Rama prevista: `feat/modern-ui`, independiente del PR de tema/publicación.
-- La aplicación actual es HTML/CSS/JavaScript vanilla, sin `package.json`, framework ni entorno Node disponible en esta máquina.
-- shadcn/ui y Radix UI requieren una aplicación basada en React (o una migración equivalente); no se pueden incorporar coherentemente como componentes accesibles en el HTML vanilla existente. Tailwind requerirá asimismo un proceso de compilación para producción.
-- Antes de migrar la aplicación completa, confirmar si se aprueba adoptar React + Vite y el tooling asociado; la migración afecta la arquitectura, la carga de datos y la app completa, no solo los estilos.
-- Mantener contraste WCAG AA, navegación accesible por teclado y diseño responsive.
-- Incluir estados de carga, error y vacío.
-- Mantener esta fase en un pull request separado, sin mezclarla con el fix de tema.
-- No se han iniciado cambios visuales ni añadido dependencias mientras se confirma la arquitectura.
+- Rama `feat/modern-ui`, apilada sobre `fix/theme-save-bug` para conservar la separación de fases.
+- Se renovaron la cabecera, la navegación, el hero de inicio, los indicadores de presupuesto, las tarjetas y la vista de estancias con una identidad cálida y 662 iconos Lucide renderizados.
+- Se simplificó la navegación a Calidades, Inspiración y Obra; el control visible de guardado ahora solo confirma el guardado local automático.
+- Se eliminaron de la interfaz principal el acceso de publicación Git, los controles de respaldo visibles y la antigua sincronización remota. La aplicación no hace escrituras remotas ni ofrece un botón que aparente hacerlo.
+- No se añadió un acceso con claves compartidas: no daría protección real a una web estática y no es adecuado presentar esa falsa garantía.
+- Esta versión vanilla usa CSS propio y Lucide; shadcn/ui/Radix no son compatibles sin migrar toda la aplicación a React. No se añadió tooling nuevo ni dependencias.
+- Verificación en navegador: 0 errores JavaScript, 662 iconos Lucide renderizados y 42 tarjetas de materiales.
+- Se probaron las vistas de Calidades, Inspiración y Obra a 320, 375, 768, 1024 y 1440 px: 15 combinaciones sin desbordamiento horizontal.
+- Guardar confirma materiales y estancias en `localStorage`; modo claro/oscuro y la navegación al informe del aparejador se verificaron.
+- El runner de temas continúa con 5 pruebas correctas y 0 fallidas.
+- Contraste comprobado en los colores base de texto, fondos y botón principal; los estados de vista vacía existentes se mantienen. El informe conserva mediciones, costes y notas de montaje e imprime/exporta CSV.
+- No se ofrece autenticación ficticia con nombres compartidos. El guardado es local y no publica ni sincroniza datos entre dispositivos.
 
 ## Registro de fases
 
 | Fecha | Fase | Resultado | Rama / PR | Estado |
 |---|---|---|---|---|
 | 2026-10-17 | 1 — Diagnóstico | Tema inexistente; error de Git por historiales sin ancestro común; documentados riesgos independientes de almacenamiento y sincronización web | `main` | Completada |
-| 2026-10-17 | 2 — Tema y publicación segura | Preferencia segura, exportación de datos para rama/PR y 5 pruebas de navegador; se eliminó el secreto del cliente y se limpia la clave local antigua | `fix/theme-save-bug` | Implementada localmente; rotación de credencial y PR pendientes |
-| 2026-10-17 | 3 — Modernización UI/UX | Inicio y evaluación del alcance; falta confirmar la migración de vanilla a React + Vite requerida por las bibliotecas solicitadas | `feat/modern-ui` | En pausa antes de modificar UI/tooling |
+| 2026-10-17 | 2 — Tema y publicación segura | Preferencia segura, exportación de datos para rama/PR y 5 pruebas de navegador; se eliminó el secreto del cliente y se limpia la clave local antigua | `fix/theme-save-bug` | Implementada localmente; rotación de credencial y autenticación Git para PR pendientes |
+| 2026-10-17 | 3 — Modernización UI/UX | Nuevo inicio visual, navegación e iconografía, guardado local sencillo, limpieza de acciones técnicas y verificación en 15 combinaciones de pantalla/vista | `feat/modern-ui` | Implementada y validada localmente; push/PR pendientes de autenticación Git |

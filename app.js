@@ -127,12 +127,41 @@ function loadData() {
 }
 
 function saveMaterialsLocally() {
-  writeLocalStorage(STORAGE_KEY_MATERIALS, JSON.stringify(state.materials));
+  const saved = writeLocalStorage(STORAGE_KEY_MATERIALS, JSON.stringify(state.materials));
   updateKPIs();
+  return saved;
 }
 
 function saveSpacesLocally() {
-  writeLocalStorage(STORAGE_KEY_SPACES, JSON.stringify(state.spaces));
+  return writeLocalStorage(STORAGE_KEY_SPACES, JSON.stringify(state.spaces));
+}
+
+function saveAllData() {
+  const materialsSaved = saveMaterialsLocally();
+  const spacesSaved = saveSpacesLocally();
+  const toast = document.getElementById("save-toast");
+  const buttons = document.querySelectorAll("[data-save-button]");
+
+  buttons.forEach(button => {
+    button.disabled = true;
+    button.innerHTML = '<i data-lucide="check"></i> Guardado';
+  });
+
+  toast.textContent = materialsSaved && spacesSaved
+    ? "Todo guardado en este dispositivo"
+    : "No se pudo guardar todo. Comprueba el espacio disponible del navegador.";
+  toast.classList.add("visible");
+  if (window.lucide) lucide.createIcons();
+
+  window.clearTimeout(saveAllData.toastTimeout);
+  saveAllData.toastTimeout = window.setTimeout(() => {
+    toast.classList.remove("visible");
+    buttons.forEach(button => {
+      button.disabled = false;
+      button.innerHTML = '<i data-lucide="check"></i> Guardar';
+    });
+    if (window.lucide) lucide.createIcons();
+  }, 1800);
 }
 
 // ==========================================================================
@@ -171,17 +200,6 @@ function switchMainView(viewName) {
   document.getElementById("mobile-tab-materials")?.classList.toggle("active", viewName === "materials");
   document.getElementById("mobile-tab-spaces")?.classList.toggle("active", viewName === "spaces");
   document.getElementById("mobile-tab-dossier")?.classList.toggle("active", viewName === "dossier");
-
-  // Actualizar etiquetas de botón de añadir superior
-  const topLabel = document.getElementById("top-add-label");
-  const mobileTopLabel = document.getElementById("mobile-top-add-label");
-  if (viewName === "spaces") {
-    if (topLabel) topLabel.textContent = "Nueva Inspiración";
-    if (mobileTopLabel) mobileTopLabel.textContent = "Foto";
-  } else {
-    if (topLabel) topLabel.textContent = "Nuevo Material";
-    if (mobileTopLabel) mobileTopLabel.textContent = "Material";
-  }
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -1369,53 +1387,6 @@ function toggleAccordion(id) {
 }
 
 // ==========================================================================
-// PREPARAR UNA PUBLICACIÓN DE DATOS MEDIANTE GIT Y PULL REQUEST
-// ==========================================================================
-function openGitHubModal() {
-  document.getElementById("modal-github").classList.add("open");
-}
-
-function closeGitHubModal() {
-  document.getElementById("modal-github").classList.remove("open");
-}
-
-function buildDataJsContent() {
-  const lastModified = new Date().toLocaleString("es-ES");
-  return `// Base de datos actualizada desde la Web de Valdemorillo
-// Última modificación: ${lastModified}
-// Promotores: Laura & Alejandro
-
-const INITIAL_MATERIALS = ${JSON.stringify(state.materials, null, 2)};
-
-const CHAPTERS = ${JSON.stringify(CHAPTERS, null, 2)};
-
-const ROOM_CATEGORIES = ${JSON.stringify(typeof ROOM_CATEGORIES !== "undefined" ? ROOM_CATEGORIES : {}, null, 2)};
-
-const INITIAL_SPACES = ${JSON.stringify(state.spaces, null, 2)};
-`;
-}
-
-function downloadDataForPublication() {
-  const dataJsContent = buildDataJsContent();
-  const file = new Blob([dataJsContent], { type: "text/javascript;charset=utf-8" });
-  const downloadUrl = URL.createObjectURL(file);
-  const link = document.createElement("a");
-  link.href = downloadUrl;
-  link.download = "data.js";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
-
-  document.getElementById("publication-status").textContent =
-    "Copia descargada. Sustituye data.js en tu clon del repositorio y publica la rama mediante un pull request.";
-}
-
-/*
- * Compatibility wrapper for old inline handlers from previously cached pages.
- * It intentionally never sends repository credentials or writes directly to main.
- */
-// ==========================================================================
 // EXPORTACIÓN A CSV / EXCEL Y RESPALDO JSON
 // ==========================================================================
 function exportToCSV() {
@@ -1573,9 +1544,6 @@ function setupEventListeners() {
   document.getElementById("btn-save-opt")?.addEventListener("click", saveOptionModal);
 
   // Modales Backup
-  document.getElementById("btn-open-backup")?.addEventListener("click", () => {
-    document.getElementById("modal-backup").classList.add("open");
-  });
   document.getElementById("btn-close-backup-modal")?.addEventListener("click", () => {
     document.getElementById("modal-backup").classList.remove("open");
   });
@@ -1593,9 +1561,9 @@ function setupEventListeners() {
   // Exportar CSV
   document.getElementById("btn-export-csv")?.addEventListener("click", exportToCSV);
 
-  // Publication modal
-  document.getElementById("btn-open-github")?.addEventListener("click", openGitHubModal);
-  document.getElementById("btn-download-data-js")?.addEventListener("click", downloadDataForPublication);
+  document.querySelectorAll("[data-save-button]").forEach(button => {
+    button.addEventListener("click", saveAllData);
+  });
 
   // Lightbox click para cerrar
   document.getElementById("lightbox")?.addEventListener("click", (e) => {
