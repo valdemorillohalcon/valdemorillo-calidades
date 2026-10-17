@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Control de Materiales & Inspiración · Calle Alcón 9, Valdemorillo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alcón 9 · Vuestra casa, a vuestro gusto</title>
   <meta name="description" content="Portal de selección de calidades, comparativa de materiales, inspiración de espacios y presupuesto para Laura y Alejandro en Valdemorillo.">
   <script src="theme.js"></script>
   <link rel="stylesheet" href="styles.css">
@@ -22,12 +22,10 @@
           <i data-lucide="home"></i>
         </div>
         <div class="header-titles">
-          <h1>CALLE ALCÓN 9 · VALDEMORILLO</h1>
+          <h1>Alcón 9</h1>
           <p>
-            <span class="owners-tag">Laura & Alejandro</span>
-            <span class="desktop-only">·</span>
-            <span class="header-tag tag-energy-a">Clase Energética A</span>
-            <span class="header-tag desktop-only">Memoria 30/7/2026</span>
+            <span class="owners-tag">Vuestra casa, a vuestro gusto</span>
+            <span class="header-tag tag-energy-a">Valdemorillo</span>
           </p>
         </div>
       </div>
@@ -35,52 +33,40 @@
       <!-- Barra de navegación principal en desktop -->
       <nav class="main-nav desktop-only">
         <button class="nav-btn active" id="nav-btn-materials" onclick="switchMainView('materials')">
-          <i data-lucide="layers"></i> Materiales & Presupuesto
+          <i data-lucide="panels-top-left"></i> Calidades
         </button>
         <button class="nav-btn nav-btn-highlight" id="nav-btn-spaces" onclick="switchMainView('spaces')">
-          <i data-lucide="sparkles"></i> Inspiración de Espacios
+          <i data-lucide="images"></i> Inspiración
         </button>
         <button class="nav-btn" id="nav-btn-dossier" onclick="switchMainView('dossier')">
-          <i data-lucide="file-text"></i> Modo Aparejador
+          <i data-lucide="clipboard-list"></i> Para la obra
         </button>
       </nav>
 
       <div class="header-actions desktop-only">
-        <button class="btn btn-primary btn-sm" id="btn-top-add" onclick="handleTopAddAction()">
-          <i data-lucide="plus-circle"></i> <span id="top-add-label">Nuevo Material</span>
-        </button>
         <label class="theme-control">
-          <span>Tema</span>
+          <i data-lucide="sun-moon" aria-hidden="true"></i>
           <select class="theme-select" data-theme-select aria-label="Tema de la aplicación">
             <option value="system">Sistema</option>
             <option value="light">Claro</option>
             <option value="dark">Oscuro</option>
           </select>
         </label>
-        <button class="btn btn-secondary btn-sm" id="btn-open-github" title="Preparar publicación">
-          <i data-lucide="git-pull-request"></i> Publicar cambios
-        </button>
-        <button class="btn btn-secondary btn-sm" id="btn-open-backup" title="Respaldar datos">
-          <i data-lucide="save"></i> Copia JSON
+        <button class="btn btn-save" data-save-button>
+          <i data-lucide="check"></i> Guardar
         </button>
       </div>
 
-      <!-- Botón menú móvil rápido -->
+      <!-- Controles esenciales para móvil -->
       <div class="mobile-header-quick mobile-only">
-        <button class="btn btn-primary btn-sm" id="btn-mobile-top-add" onclick="handleTopAddAction()">
-          <i data-lucide="plus"></i> <span id="mobile-top-add-label">Añadir</span>
-        </button>
         <label class="theme-control">
-          <span>Tema</span>
+          <i data-lucide="sun-moon" aria-hidden="true"></i>
           <select class="theme-select" data-theme-select aria-label="Tema de la aplicación">
             <option value="system">Sistema</option>
             <option value="light">Claro</option>
             <option value="dark">Oscuro</option>
           </select>
         </label>
-        <button class="btn btn-secondary btn-sm" onclick="openGitHubModal()" aria-label="Preparar publicación">
-          <i data-lucide="git-pull-request"></i>
-        </button>
       </div>
     </div>
     <p id="theme-storage-status" class="theme-storage-status" role="status" aria-live="polite"></p>
@@ -91,6 +77,22 @@
        SECCIÓN 1: VISTA DE MATERIALES Y CALIDADES
        ========================================================================= -->
   <div id="view-materials-container">
+    <section class="welcome-hero" aria-labelledby="welcome-title">
+      <div class="welcome-copy">
+        <span class="eyebrow"><i data-lucide="sparkles"></i> DISEÑADA PARA VOSOTROS</span>
+        <h2 id="welcome-title">Hagamos hogar,<br><span>decisión a decisión.</span></h2>
+        <p>Elegid los materiales, comparad opciones y llevad cada detalle de la obra bajo control.</p>
+        <button class="btn btn-hero" onclick="openAddMaterialModal()">
+          <i data-lucide="plus"></i> Añadir una partida
+        </button>
+      </div>
+      <div class="welcome-art" aria-hidden="true">
+        <div class="art-sun"></div>
+        <div class="art-window"><span></span><span></span><span></span><span></span></div>
+        <div class="art-plant"><i data-lucide="sprout"></i></div>
+      </div>
+    </section>
+
     <!-- DASHBOARD DE KPIs Y CONTROL PRESUPUESTARIO -->
     <section class="kpi-section" id="kpi-section">
       <div class="kpi-mobile-toggle mobile-only" onclick="toggleKPIsMobile()">
@@ -104,8 +106,8 @@
       <div class="kpi-grid" id="kpi-grid-container">
         <div class="kpi-card kpi-total">
           <div class="kpi-title">
-            <span>Total Materiales Estimado</span>
-            <i data-lucide="euro"></i>
+            <span>Presupuesto estimado</span>
+            <i data-lucide="wallet"></i>
           </div>
           <div class="kpi-value" id="kpi-total-val">0 €</div>
           <div class="kpi-subtext" id="kpi-total-sub">Con mediciones y factor merma</div>
@@ -113,8 +115,8 @@
 
         <div class="kpi-card kpi-closed">
           <div class="kpi-title">
-            <span>Partidas Cerradas</span>
-            <i data-lucide="check-circle-2"></i>
+            <span>Presupuesto elegido</span>
+            <i data-lucide="badge-check"></i>
           </div>
           <div class="kpi-value" id="kpi-closed-val">0 €</div>
           <div class="kpi-subtext" id="kpi-closed-sub">0 de 0 partidas cerradas</div>
@@ -125,8 +127,8 @@
 
         <div class="kpi-card kpi-criteria">
           <div class="kpi-title">
-            <span>Criterio Laura & Alejandro</span>
-            <i data-lucide="sparkles"></i>
+            <span>Decisiones vuestras</span>
+            <i data-lucide="heart"></i>
           </div>
           <div class="kpi-value" id="kpi-criteria-val">0</div>
           <div class="kpi-subtext" id="kpi-criteria-sub">Elementos a decidir</div>
@@ -134,8 +136,8 @@
 
         <div class="kpi-card kpi-pending">
           <div class="kpi-title">
-            <span>Decisiones Pendientes</span>
-            <i data-lucide="clock"></i>
+            <span>Por decidir</span>
+            <i data-lucide="list-todo"></i>
           </div>
           <div class="kpi-value" id="kpi-pending-val">0</div>
           <div class="kpi-subtext" id="kpi-pending-sub">Por elegir o en estudio</div>
@@ -150,23 +152,23 @@
         <div class="filter-tabs-scroll">
           <div class="filter-tabs">
             <button class="filter-tab tab-criteria active" data-filter="criteria">
-              <i data-lucide="sparkles"></i> Criterio Laura & Alejandro
+              <i data-lucide="heart"></i> Decisiones vuestras
               <span class="badge-count" id="count-criteria">0</span>
             </button>
             <button class="filter-tab" data-filter="all">
-              <i data-lucide="layers"></i> Toda la Obra
+              <i data-lucide="layout-grid"></i> Todo
               <span class="badge-count" id="count-all">0</span>
             </button>
             <button class="filter-tab" data-filter="pending">
-              <i data-lucide="alert-circle"></i> Pendientes
+              <i data-lucide="circle-dashed"></i> Por elegir
               <span class="badge-count" id="count-pending">0</span>
             </button>
             <button class="filter-tab" data-filter="reviewing">
-              <i data-lucide="search"></i> En Valoración
+              <i data-lucide="hourglass"></i> En valoración
               <span class="badge-count" id="count-reviewing">0</span>
             </button>
             <button class="filter-tab" data-filter="selected">
-              <i data-lucide="check-check"></i> Cerrados
+              <i data-lucide="badge-check"></i> Elegidos
               <span class="badge-count" id="count-selected">0</span>
             </button>
           </div>
@@ -178,8 +180,8 @@
             <input type="text" id="search-input" class="search-input" placeholder="Buscar material, estancia, IKEA, Simon...">
           </div>
 
-          <select id="select-chapter" class="select-chapter">
-            <option value="todos">Todos los Capítulos</option>
+          <select id="select-chapter" class="select-chapter" aria-label="Filtrar por capítulo">
+            <option value="todos">Todos los capítulos</option>
             <!-- Rellenado dinámicamente -->
           </select>
 
@@ -332,19 +334,19 @@
        ========================================================================= -->
   <nav class="mobile-bottom-nav mobile-only">
     <button class="mobile-tab-btn active" id="mobile-tab-materials" onclick="switchMainView('materials')">
-      <i data-lucide="layers"></i>
+      <i data-lucide="panels-top-left"></i>
       <span>Calidades</span>
     </button>
     <button class="mobile-tab-btn" id="mobile-tab-spaces" onclick="switchMainView('spaces')">
-      <i data-lucide="sparkles"></i>
+      <i data-lucide="images"></i>
       <span>Inspiración</span>
     </button>
     <button class="mobile-tab-btn" id="mobile-tab-dossier" onclick="switchMainView('dossier')">
-      <i data-lucide="file-text"></i>
-      <span>Aparejador</span>
+      <i data-lucide="clipboard-list"></i>
+      <span>Obra</span>
     </button>
-    <button class="mobile-tab-btn" id="mobile-tab-save" onclick="openGitHubModal()">
-      <i data-lucide="cloud"></i>
+    <button class="mobile-tab-btn mobile-save-tab" data-save-button aria-label="Guardar cambios">
+      <i data-lucide="check"></i>
       <span>Guardar</span>
     </button>
   </nav>
@@ -606,65 +608,6 @@
   </div>
 
   <!-- =========================================================================
-       MODAL: PREPARAR CAMBIOS PARA PUBLICAR MEDIANTE GIT
-       ========================================================================= -->
-  <div class="modal-overlay" id="modal-github">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h3>Preparar cambios para GitHub</h3>
-        <button class="modal-close" onclick="closeGitHubModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <div style="width: 44px; height: 44px; border-radius: 50%; background: #24292f; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem;">
-            <i data-lucide="github"></i>
-          </div>
-          <div>
-            <h4 style="font-size: 1.05rem; font-weight: 700;">Repositorio en Producción</h4>
-            <p style="font-size: 0.8rem; color: var(--text-muted);">valdemorillohalcon / valdemorillo-calidades</p>
-          </div>
-        </div>
-
-        <div style="background: var(--bg-card-alt); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.85rem; margin-top: 0.5rem;">
-          <label style="font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">URL Pública de vuestra aplicación:</label>
-          <div style="display: flex; gap: 0.4rem; margin-top: 0.3rem;">
-            <input type="text" id="github-public-url" class="form-control" readonly value="https://valdemorillohalcon.github.io/valdemorillo-calidades/" style="font-weight: 600; color: #2563eb; font-size: 0.825rem;">
-            <button class="btn btn-primary btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('github-public-url').value); alert('¡URL copiada al portapapeles!');">
-              Copiar
-            </button>
-          </div>
-        </div>
-
-        <div class="publication-card">
-          <h5>
-            <i data-lucide="git-pull-request" style="width: 16px; height: 16px;"></i>
-            Publicar los cambios con Git
-          </h5>
-          <p>
-            La aplicación no escribe directamente en la rama principal ni guarda credenciales de GitHub. Descarga los datos y crea una rama con un pull request para revisarlos antes de publicar.
-          </p>
-          <button class="btn btn-primary" id="btn-download-data-js" style="width: 100%; margin-top: 0.6rem; justify-content: center;">
-            <i data-lucide="download"></i> Descargar data.js
-          </button>
-          <ol class="publication-steps">
-            <li>En el clon local del proyecto, crea una rama: <code>git switch -c data/actualizar-calidades</code>.</li>
-            <li>Reemplaza el archivo <code>data.js</code> descargado en la carpeta del proyecto.</li>
-            <li>Guarda y publica la rama:</li>
-          </ol>
-          <pre class="publication-command"><code>git add data.js
-git commit -m "Actualiza calidades e inspiración"
-git push -u origin data/actualizar-calidades</code></pre>
-          <p class="publication-note">Después, abre un pull request a <code>main</code> en GitHub. La web se actualizará cuando se integre.</p>
-          <p id="publication-status" role="status" aria-live="polite"></p>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeGitHubModal()">Cerrar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- =========================================================================
        LIGHTBOX PARA VER FOTOS AMPLIADAS
        ========================================================================= -->
   <div class="lightbox-modal" id="lightbox">
@@ -672,6 +615,7 @@ git push -u origin data/actualizar-calidades</code></pre>
       <img src="" alt="Foto ampliada" class="lightbox-img" id="lightbox-img">
       <button class="lightbox-close-btn" onclick="document.getElementById('lightbox').classList.remove('open')">&times;</button>
     </div>
+    <div class="app-toast" id="save-toast" role="status" aria-live="polite"></div>
   </div>
 
   <!-- SCRIPTS -->
