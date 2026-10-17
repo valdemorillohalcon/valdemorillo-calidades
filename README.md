@@ -58,7 +58,7 @@ Estructurada a partir del **Plano 03 (Distribución y Superficies de Planta Baja
 ---
 
 ### 5. ☁️ Sincronización en la Nube (GitHub Pages)
-- Guardado automático en el navegador (`localStorage`) y confirmación sencilla con el botón «Guardar».
+- Guardado automático en el navegador (`localStorage`) y confirmación visible con el botón «Guardar».
 - El guardado desde la aplicación es local al dispositivo; los datos no se envían a GitHub. Los cambios del código se publican por separado mediante Git, nunca con credenciales embebidas en el navegador.
 - No hay cuentas ni permisos por usuario: cualquier visitante puede editar los datos en su navegador y esos cambios no se sincronizan automáticamente con el aparejador ni con otros dispositivos.
 

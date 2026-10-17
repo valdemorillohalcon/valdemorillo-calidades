@@ -2744,7 +2744,7 @@ a:focus-visible {
 
 .app-toast {
   position: fixed;
-  z-index: 1200;
+  z-index: 2100;
   left: 50%;
   bottom: 1.25rem;
   display: flex;
@@ -2761,7 +2761,7 @@ a:focus-visible {
   opacity: 0;
   pointer-events: none;
   transform: translate(-50%, 12px);
-  transition: opacity 180ms ease, transform 180ms ease;
+  transition: transform 180ms ease;
 }
 
 .app-toast.visible {

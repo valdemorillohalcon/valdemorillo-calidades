@@ -87,6 +87,16 @@ El error Git reproducido era un problema de historial del repositorio, no del te
 - Verificación en navegador: 14 capítulos / 65 partidas en la vista «Todo», un solo capítulo abierto a la vez, búsqueda que mostró 7 resultados, selector de capítulo que expande directamente su grupo y documentación con 65 filas. A 320 px no hay desbordamiento horizontal.
 - GitHub Pages desplegó el cambio. La verificación detectó que una sesión de navegador seguía usando el JavaScript previo por caché; las URLs con versión fuerzan la descarga de JavaScript, datos, estilos e icono actualizados.
 
+## Revisión del guardado
+
+- Reproducido en producción: los dos conjuntos de datos existentes (materiales e inspiración) estaban escritos en `localStorage` y coincidían con el estado cargado; pulsar «Guardar» conservaba ambos valores.
+- Causa del aviso imperceptible: `#save-toast` estaba dentro del lightbox, cuyo estado cerrado aplica opacidad cero a todo su contenido. El guardado local funcionaba, pero su confirmación visual quedaba oculta.
+- Se movió el aviso fuera del lightbox para hacerlo visible y accesible. El botón solo muestra «Guardado» si ambas escrituras tienen éxito; ante un fallo, el botón permanece disponible y el aviso distingue si se guardó parcialmente o no se guardó nada.
+- Se eliminó la transición de opacidad del aviso para que no dependa del ciclo de animación del navegador; se conserva el desplazamiento breve.
+- La confirmación especifica que los datos se guardan en este dispositivo. La app estática no sincroniza datos ni actualiza el contenido publicado para otros usuarios; eso requiere un servicio compartido con backend.
+- Se versionaron las URLs de CSS y JavaScript para que la confirmación corregida no quede oculta por cachés del navegador.
+- Validación en navegador: cambio de dato sobrevivió a una recarga real y se restauró exactamente el almacenamiento original; el aviso quedó fuera del lightbox, apareció con el estado de éxito y el botón siguió disponible ante cuota de almacenamiento simulada.
+
 ## Registro de fases
 
 | Fecha | Fase | Resultado | Rama / PR | Estado |
@@ -95,3 +105,4 @@ El error Git reproducido era un problema de historial del repositorio, no del te
 | 2026-10-17 | 2 — Tema y publicación segura | Preferencia segura, exportación de datos para rama/PR y 5 pruebas de navegador; se eliminó la escritura GitHub desde el cliente | `fix/theme-save-bug` / [PR #1](https://github.com/valdemorillohalcon/valdemorillo-calidades/pull/1) | Integrada y publicada |
 | 2026-10-17 | 3 — Modernización UI/UX | Nuevo inicio visual, navegación e iconografía, guardado local sencillo, limpieza de acciones técnicas y verificación responsive | `feat/modern-ui` / [PR #2](https://github.com/valdemorillohalcon/valdemorillo-calidades/pull/2) | Integrada y publicada |
 | 2026-10-17 | 4 — Organización y área del aparejador | Capítulos plegables y búsqueda orientada a resultados, marca de Laura y Alex, documentación técnica, edición/local y recarga fiable de recursos cacheados | `feat/organized-material-browser` | Integrada en `main` mediante PR #3; versionado de recursos para clientes con caché antigua |
+| Pendiente | Revisión del guardado | Aviso de confirmación visible, estado del botón coherente con el resultado de almacenamiento y validación de recuperación local | `fix/save-confirmation` | Verificada localmente; pendiente de publicación |
