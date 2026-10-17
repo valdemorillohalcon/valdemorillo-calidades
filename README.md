@@ -57,7 +57,7 @@ Estructurada a partir del **Plano 03 (Distribución y Superficies de Planta Baja
 
 ### 5. ☁️ Sincronización en la Nube (GitHub Pages)
 - Guardado local automático en el navegador (`localStorage`).
-- Botón **"Subir Ahora a GitHub"** integrado en la web para persistir cambios directamente en el repositorio `valdemorillohalcon/valdemorillo-calidades` a través de GitHub REST API.
+- El botón de publicación descarga un `data.js` actualizado. Reemplázalo en un clon local, crea y publica una rama con Git y abre un pull request a `main`; la aplicación desplegada nunca escribe directamente al repositorio ni contiene credenciales.
 - Descarga y restauración manual en archivo `.json`.
 
 ---

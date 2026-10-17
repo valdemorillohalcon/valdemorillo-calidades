@@ -57,8 +57,8 @@
             <option value="dark">Oscuro</option>
           </select>
         </label>
-        <button class="btn btn-secondary btn-sm" id="btn-open-github" title="Sincronizar con GitHub">
-          <i data-lucide="cloud"></i> Guardar en GitHub
+        <button class="btn btn-secondary btn-sm" id="btn-open-github" title="Preparar publicación">
+          <i data-lucide="git-pull-request"></i> Publicar cambios
         </button>
         <button class="btn btn-secondary btn-sm" id="btn-open-backup" title="Respaldar datos">
           <i data-lucide="save"></i> Copia JSON
@@ -78,8 +78,8 @@
             <option value="dark">Oscuro</option>
           </select>
         </label>
-        <button class="btn btn-secondary btn-sm" onclick="openGitHubModal()">
-          <i data-lucide="cloud"></i>
+        <button class="btn btn-secondary btn-sm" onclick="openGitHubModal()" aria-label="Preparar publicación">
+          <i data-lucide="git-pull-request"></i>
         </button>
       </div>
     </div>
@@ -606,12 +606,12 @@
   </div>
 
   <!-- =========================================================================
-       MODAL: GUARDAR Y SINCRONIZAR DIRECTAMENTE EN GITHUB
+       MODAL: PREPARAR CAMBIOS PARA PUBLICAR MEDIANTE GIT
        ========================================================================= -->
   <div class="modal-overlay" id="modal-github">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>Sincronización en la Nube (GitHub)</h3>
+        <h3>Preparar cambios para GitHub</h3>
         <button class="modal-close" onclick="closeGitHubModal()">&times;</button>
       </div>
       <div class="modal-body">
@@ -635,18 +635,27 @@
           </div>
         </div>
 
-        <!-- Botón para sincronizar directamente desde la web -->
-        <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: var(--radius-md); padding: 1rem; margin-top: 0.75rem;">
-          <h5 style="font-size: 0.9rem; font-weight: 700; color: #166534; display: flex; align-items: center; gap: 0.4rem;">
-            <i data-lucide="cloud-upload" style="width: 16px; height: 16px;"></i> Guardar cambios en GitHub directamente
+        <div class="publication-card">
+          <h5>
+            <i data-lucide="git-pull-request" style="width: 16px; height: 16px;"></i>
+            Publicar los cambios con Git
           </h5>
-          <p style="font-size: 0.8rem; color: #15803d; margin-top: 0.25rem; line-height: 1.4;">
-            Pulsa este botón para subir todas vuestras selecciones de materiales y fotos de inspiración a GitHub en tiempo real:
+          <p>
+            La aplicación no escribe directamente en la rama principal ni guarda credenciales de GitHub. Descarga los datos y crea una rama con un pull request para revisarlos antes de publicar.
           </p>
-          <button class="btn btn-success" id="btn-sync-github-now" style="width: 100%; margin-top: 0.6rem; justify-content: center;" onclick="syncDataToGitHubCloud()">
-            <i data-lucide="upload-cloud"></i> Subir Ahora a GitHub
+          <button class="btn btn-primary" id="btn-download-data-js" style="width: 100%; margin-top: 0.6rem; justify-content: center;">
+            <i data-lucide="download"></i> Descargar data.js
           </button>
-          <div id="github-sync-status" style="font-size: 0.78rem; text-align: center; margin-top: 0.4rem; font-weight: 600;"></div>
+          <ol class="publication-steps">
+            <li>En el clon local del proyecto, crea una rama: <code>git switch -c data/actualizar-calidades</code>.</li>
+            <li>Reemplaza el archivo <code>data.js</code> descargado en la carpeta del proyecto.</li>
+            <li>Guarda y publica la rama:</li>
+          </ol>
+          <pre class="publication-command"><code>git add data.js
+git commit -m "Actualiza calidades e inspiración"
+git push -u origin data/actualizar-calidades</code></pre>
+          <p class="publication-note">Después, abre un pull request a <code>main</code> en GitHub. La web se actualizará cuando se integre.</p>
+          <p id="publication-status" role="status" aria-live="polite"></p>
         </div>
       </div>
       <div class="modal-footer">

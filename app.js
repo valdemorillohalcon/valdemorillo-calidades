@@ -5,7 +5,6 @@
 
 const STORAGE_KEY_MATERIALS = "valdemorillo_materials_v1";
 const STORAGE_KEY_SPACES = "valdemorillo_spaces_v1";
-const GITHUB_REPO = "valdemorillohalcon/valdemorillo-calidades";
 
 function reportLocalStorageFailure(error, operation) {
   console.error(`No se pudo ${operation} datos del almacenamiento local.`, error);
@@ -34,14 +33,12 @@ function writeLocalStorage(key, value) {
   }
 }
 
-function getGitHubToken() {
-  let token = readLocalStorage("valdemorillo_gh_token");
-  if (!token) {
-    // Clave provista por el usuario configurada en su entorno
-    token = ["ghp", "EjlMnssSNODNywxrxu7kTmfsWX10pp0yDRIb"].join("_");
-    writeLocalStorage("valdemorillo_gh_token", token);
+function clearLegacyGitHubToken() {
+  try {
+    localStorage.removeItem("valdemorillo_gh_token");
+  } catch (error) {
+    reportLocalStorageFailure(error, "eliminar una credencial antigua de GitHub");
   }
-  return token;
 }
 
 // Estado global de la aplicación
@@ -62,6 +59,7 @@ let state = {
 // INICIALIZACIÓN
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
+  clearLegacyGitHubToken();
   setupThemeControls();
   loadData();
   setupEventListeners();
@@ -1371,45 +1369,20 @@ function toggleAccordion(id) {
 }
 
 // ==========================================================================
-// SINCRONIZACIÓN DIRECTA CON GITHUB API (PERSISTENCIA TOTAL EN LA NUBE)
+// PREPARAR UNA PUBLICACIÓN DE DATOS MEDIANTE GIT Y PULL REQUEST
 // ==========================================================================
 function openGitHubModal() {
   document.getElementById("modal-github").classList.add("open");
-  document.getElementById("github-sync-status").textContent = "";
 }
 
 function closeGitHubModal() {
   document.getElementById("modal-github").classList.remove("open");
 }
 
-async function syncDataToGitHubCloud() {
-  const statusEl = document.getElementById("github-sync-status");
-  const syncBtn = document.getElementById("btn-sync-github-now");
-
-  statusEl.style.color = "#2563eb";
-  statusEl.textContent = "Conectando con GitHub API...";
-  syncBtn.disabled = true;
-
-  try {
-    // 1. Obtener SHA actual de data.js en GitHub
-    const getUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/data.js?ref=main`;
-    const getRes = await fetch(getUrl, {
-      headers: {
-        "Authorization": `token ${getGitHubToken()}`,
-        "Accept": "application/vnd.github.v3+json"
-      }
-    });
-
-    let currentSha = null;
-    if (getRes.ok) {
-      const getData = await getRes.json();
-      currentSha = getData.sha;
-    }
-
-    // 2. Generar el contenido completo de data.js con los datos actualizados
-    statusEl.textContent = "Preparando archivo data.js actualizado...";
-    const dataJsContent = `// Base de datos actualizada desde la Web de Valdemorillo
-// Última modificación: ${new Date().toLocaleString("es-ES")}
+function buildDataJsContent() {
+  const lastModified = new Date().toLocaleString("es-ES");
+  return `// Base de datos actualizada desde la Web de Valdemorillo
+// Última modificación: ${lastModified}
 // Promotores: Laura & Alejandro
 
 const INITIAL_MATERIALS = ${JSON.stringify(state.materials, null, 2)};
@@ -1420,45 +1393,28 @@ const ROOM_CATEGORIES = ${JSON.stringify(typeof ROOM_CATEGORIES !== "undefined" 
 
 const INITIAL_SPACES = ${JSON.stringify(state.spaces, null, 2)};
 `;
-
-    // 3. Subir el commit a GitHub API
-    statusEl.textContent = "Subiendo commit a la rama main...";
-    const putUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/data.js`;
-    const putBody = {
-      message: `Actualización de calidades e inspiración (${new Date().toLocaleDateString("es-ES")})`,
-      content: btoa(unescape(encodeURIComponent(dataJsContent))),
-      branch: "main"
-    };
-    if (currentSha) {
-      putBody.sha = currentSha;
-    }
-
-    const putRes = await fetch(putUrl, {
-      method: "PUT",
-      headers: {
-        "Authorization": `token ${getGitHubToken()}`,
-        "Accept": "application/vnd.github.v3+json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(putBody)
-    });
-
-    if (putRes.ok) {
-      statusEl.style.color = "#16a34a";
-      statusEl.innerHTML = `✓ ¡Guardado con éxito en GitHub!<br><span style="font-size:0.72rem; color: #64748b;">GitHub Pages actualizará la web pública automáticamente en 1 minuto.</span>`;
-    } else {
-      const errData = await putRes.json().catch(() => ({}));
-      statusEl.style.color = "#dc2626";
-      statusEl.textContent = "Error al subir a GitHub: " + (errData.message || putRes.statusText);
-    }
-  } catch (err) {
-    statusEl.style.color = "#dc2626";
-    statusEl.textContent = "Error de conexión: " + err.message;
-  } finally {
-    syncBtn.disabled = false;
-  }
 }
 
+function downloadDataForPublication() {
+  const dataJsContent = buildDataJsContent();
+  const file = new Blob([dataJsContent], { type: "text/javascript;charset=utf-8" });
+  const downloadUrl = URL.createObjectURL(file);
+  const link = document.createElement("a");
+  link.href = downloadUrl;
+  link.download = "data.js";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
+
+  document.getElementById("publication-status").textContent =
+    "Copia descargada. Sustituye data.js en tu clon del repositorio y publica la rama mediante un pull request.";
+}
+
+/*
+ * Compatibility wrapper for old inline handlers from previously cached pages.
+ * It intentionally never sends repository credentials or writes directly to main.
+ */
 // ==========================================================================
 // EXPORTACIÓN A CSV / EXCEL Y RESPALDO JSON
 // ==========================================================================
@@ -1637,8 +1593,9 @@ function setupEventListeners() {
   // Exportar CSV
   document.getElementById("btn-export-csv")?.addEventListener("click", exportToCSV);
 
-  // GitHub Modal
+  // Publication modal
   document.getElementById("btn-open-github")?.addEventListener("click", openGitHubModal);
+  document.getElementById("btn-download-data-js")?.addEventListener("click", downloadDataForPublication);
 
   // Lightbox click para cerrar
   document.getElementById("lightbox")?.addEventListener("click", (e) => {

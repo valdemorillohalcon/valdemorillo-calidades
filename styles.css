@@ -250,6 +250,62 @@ body {
   display: none;
 }
 
+.publication-card {
+  margin-top: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-card-alt);
+  color: var(--text-main);
+}
+
+.publication-card h5 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.publication-card > p {
+  margin-top: 0.3rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.publication-steps {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.85rem 0 0.5rem;
+  padding-left: 1.4rem;
+  color: var(--text-main);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.publication-steps code,
+.publication-note code {
+  overflow-wrap: anywhere;
+}
+
+.publication-command {
+  overflow-x: auto;
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 0.75rem;
+  line-height: 1.55;
+}
+
+#publication-status {
+  min-height: 1.2em;
+  color: var(--text-main);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
 /* ==========================================================================
    BOTONES
    ========================================================================== */
